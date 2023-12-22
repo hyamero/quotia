@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
 
@@ -12,18 +13,24 @@ export function CreatePost() {
   const createPost = api.post.create.useMutation({
     onSuccess: () => {
       router.refresh();
+      toast.success("Post created!");
       setName("");
+    },
+    onMutate: () => toast.info("Creating post..."),
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (name.trim() === "") return;
+    createPost.mutate({ name }, {});
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        createPost.mutate({ name });
-      }}
-      className="flex flex-col gap-2"
-    >
+    <form onSubmit={(e) => handleSubmit(e)} className="flex flex-col gap-2">
       <input
         type="text"
         placeholder="Title"
