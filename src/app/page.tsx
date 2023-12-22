@@ -51,7 +51,7 @@ async function CrudShowcase() {
     <div className="w-full max-w-xs">
       {allPosts ? (
         allPosts.map((post) => {
-          return <p key={post.id}>{post.name}</p>;
+          return <p key={post.id}>{post.content}</p>;
         })
       ) : (
         <p>You have no posts yet.</p>
