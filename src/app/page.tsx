@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { useState } from "react";
 
 import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+
+import { type posts } from "~/server/db/schema";
 
 export default async function Home() {
   const hello = await api.post.hello.query({ text: "from tRPC" });
@@ -47,8 +50,16 @@ async function CrudShowcase() {
 
   const allPosts = await api.post.getAll.query();
 
+  // const [tempPosts, setTempPosts] = useState<(typeof posts)[]>([]);
+
   return (
     <div className="w-full max-w-xs">
+      {/* {tempPosts
+        ? tempPosts.map(() => {
+            return <div></div>;
+          })
+        : null} */}
+
       {allPosts ? (
         allPosts.map((post) => {
           return <p key={post.id}>{post.content}</p>;
