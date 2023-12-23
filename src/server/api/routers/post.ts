@@ -17,12 +17,6 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  // getLatest: protectedProcedure.query(({ ctx }) => {
-  //   return ctx.db.query.posts.findMany({
-  //     orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-  //   });
-  // }),
-
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.posts.findMany({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],

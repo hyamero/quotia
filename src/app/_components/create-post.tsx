@@ -1,27 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
-import { toast } from "sonner";
-
+import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
-import { useStore } from "../utils/useStore";
+import { toast } from "sonner";
 
 export function CreatePost() {
   const router = useRouter();
   const [content, setContent] = useState("");
 
-  // const { tempPosts, setTempPosts } = useStore();
-
-  const {
-    mutate: createPost,
-    isLoading,
-    // data,
-  } = api.post.create.useMutation({
-    onSuccess: (data) => {
+  const { mutate: createPost, isLoading } = api.post.create.useMutation({
+    onSuccess: () => {
       router.refresh();
       setContent("");
-      console.log(data);
       toast.success("Post created!");
     },
     onMutate: () => toast.info("Creating post..."),
@@ -35,9 +26,6 @@ export function CreatePost() {
 
     if (content.trim() === "") return;
     createPost({ content });
-
-    // setTempPosts(data);
-    // console.log(tempPosts);
   };
 
   return (
