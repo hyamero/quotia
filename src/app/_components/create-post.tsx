@@ -5,15 +5,23 @@ import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
 import { api } from "~/trpc/react";
+import { useStore } from "../utils/useStore";
 
 export function CreatePost() {
   const router = useRouter();
   const [content, setContent] = useState("");
 
-  const createPost = api.post.create.useMutation({
-    onSuccess: () => {
+  // const { tempPosts, setTempPosts } = useStore();
+
+  const {
+    mutate: createPost,
+    isLoading,
+    // data,
+  } = api.post.create.useMutation({
+    onSuccess: (data) => {
       router.refresh();
       setContent("");
+      console.log(data);
       toast.success("Post created!");
     },
     onMutate: () => toast.info("Creating post..."),
@@ -26,7 +34,10 @@ export function CreatePost() {
     e.preventDefault();
 
     if (content.trim() === "") return;
-    createPost.mutate({ content });
+    createPost({ content });
+
+    // setTempPosts(data);
+    // console.log(tempPosts);
   };
 
   return (
@@ -41,9 +52,9 @@ export function CreatePost() {
       <button
         type="submit"
         className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20"
-        disabled={createPost.isLoading}
+        disabled={isLoading}
       >
-        {createPost.isLoading ? "Submitting..." : "Submit"}
+        {isLoading ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
