@@ -12,22 +12,25 @@ import {
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
+ * Multi-project schema feature
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
+
 export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 
 export const posts = mysqlTable("post", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-  content: varchar("name", { length: 256 }),
-  createdById: varchar("createdById", { length: 255 }).notNull(),
+  authorId: varchar("authorId", { length: 255 }).notNull(),
+  content: varchar("content", { length: 256 }),
   createdAt: timestamp("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
   updatedAt: timestamp("updatedAt").onUpdateNow(),
 });
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, { fields: [posts.authorId], references: [users.id] }),
+}));
 
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
