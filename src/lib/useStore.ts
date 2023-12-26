@@ -19,6 +19,6 @@ export const useStore = create<PostState>()((set) => ({
   tempPosts: [],
   setTempPosts: (newPost) =>
     set((state) => ({
-      tempPosts: [...state.tempPosts, newPost],
+      tempPosts: [newPost, ...state.tempPosts],
     })),
 }));
