@@ -1,9 +1,9 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { useStore } from "~/lib/useStore";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
-import { useStore } from "~/lib/useStore";
 
 export function CreatePost() {
   const [content, setContent] = useState("");
