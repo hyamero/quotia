@@ -1,5 +1,4 @@
 import { api } from "~/trpc/server";
-import { CreatePost } from "./create-post";
 import { TemporaryPosts } from "./temporary-posts";
 
 export async function Posts() {
@@ -7,6 +6,7 @@ export async function Posts() {
 
   return (
     <div className="w-full max-w-xs">
+      <div className="mb-10"></div>
       <TemporaryPosts />
 
       {allPosts ? (
@@ -16,8 +16,6 @@ export async function Posts() {
       ) : (
         <p>You have no posts yet.</p>
       )}
-
-      <CreatePost />
     </div>
   );
 }
