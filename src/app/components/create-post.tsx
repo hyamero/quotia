@@ -29,7 +29,11 @@ import {
 } from "./ui/drawer";
 
 import { Button } from "./ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/app/components/ui/avatar";
 
 type CreatePostFormProps = {
   session?: Session;
@@ -82,7 +86,7 @@ function CreatePostForm({ session, setOpen }: CreatePostFormProps) {
       className="mx-auto flex w-full max-w-screen-sm flex-col gap-4"
     >
       <div className="flex items-start gap-4">
-        <Avatar className="h-12 w-12">
+        <Avatar>
           <AvatarImage
             className="rounded-full"
             src={session?.user.image as string | undefined}
