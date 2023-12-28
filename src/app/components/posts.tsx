@@ -12,7 +12,7 @@ export async function Posts({ session }: { session: Session }) {
 
       {allPosts ? (
         allPosts.map((post) => {
-          return <PostItem session={session} post={post} />;
+          return <PostItem key={post.id} session={session} post={post} />;
         })
       ) : (
         <p>No posts yet.</p>

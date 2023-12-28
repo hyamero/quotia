@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { nanoid } from "nanoid";
 
 import {
   createTRPCRouter,
@@ -14,6 +15,7 @@ export const postRouter = createTRPCRouter({
       await ctx.db.insert(posts).values({
         authorId: ctx.session.user.id,
         content: input.content,
+        id: nanoid(),
       });
 
       return ctx.db.query.posts.findFirst({

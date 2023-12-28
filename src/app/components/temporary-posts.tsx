@@ -11,7 +11,7 @@ export function TemporaryPosts({ session }: { session: Session }) {
     <div>
       {tempPosts
         ? tempPosts.map((post) => {
-            return <PostItem session={session} post={post} />;
+            return <PostItem key={post!.id} session={session} post={post} />;
           })
         : null}
     </div>

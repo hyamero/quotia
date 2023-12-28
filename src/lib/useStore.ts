@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export type Post =
   | {
-      id: number;
+      id: string;
       authorId: string;
       content: string | null;
       createdAt: Date;

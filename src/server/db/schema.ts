@@ -1,6 +1,5 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
   index,
   int,
   mysqlTableCreator,
@@ -19,7 +18,7 @@ import { type AdapterAccount } from "next-auth/adapters";
 export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 
 export const posts = mysqlTable("post", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
   authorId: varchar("authorId", { length: 255 }).notNull(),
   content: varchar("content", { length: 256 }),
   createdAt: timestamp("created_at")

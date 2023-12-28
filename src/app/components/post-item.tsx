@@ -17,10 +17,7 @@ export const PostItem = ({ session, post }: PostItemProps) => {
   if (!session.user || !post) return;
 
   return (
-    <div
-      key={post.id}
-      className="flex items-start justify-between border-t py-5"
-    >
+    <div className="flex items-start justify-between border-t py-5">
       <div className="flex items-start gap-3">
         <Avatar>
           <AvatarImage
