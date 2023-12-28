@@ -1,15 +1,17 @@
 "use client";
 
+import { type Session } from "next-auth";
 import { useStore } from "~/lib/useStore";
+import { PostItem } from "./post-item";
 
-export function TemporaryPosts() {
+export function TemporaryPosts({ session }: { session: Session }) {
   const { tempPosts } = useStore();
 
   return (
-    <div className="w-full max-w-xs">
+    <div>
       {tempPosts
-        ? tempPosts.map((tempPosts) => {
-            return <p key={tempPosts?.id}>{tempPosts?.content}</p>;
+        ? tempPosts.map((post) => {
+            return <PostItem session={session} post={post} />;
           })
         : null}
     </div>

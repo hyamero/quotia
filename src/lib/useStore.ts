@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type Post =
+export type Post =
   | {
       id: number;
       authorId: string;
