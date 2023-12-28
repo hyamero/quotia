@@ -19,8 +19,8 @@ export const PostItem = ({ session, post }: PostItemProps) => {
 
   return (
     <div className="flex items-start justify-between border-t py-5">
-      <div className="flex items-start gap-3">
-        <Avatar>
+      <div className="flex w-full items-start gap-3">
+        <Avatar className="relative top-1">
           <AvatarImage
             className="rounded-full"
             src={session.user.image as string | undefined}
@@ -28,37 +28,42 @@ export const PostItem = ({ session, post }: PostItemProps) => {
           <AvatarFallback>{session.user.name?.split(" ").at(0)}</AvatarFallback>
         </Avatar>
 
-        <div>
-          <h3 className="font-semibold">{session.user.name}</h3>
+        <div className="w-full">
+          <div className="flex justify-between">
+            <span className="font-semibold">{session.user.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-zinc-500">
+                {formatDistanceToNowStrict(post.createdAt, {
+                  addSuffix: false,
+                  locale: {
+                    formatDistance: (...props) => formatDistance(...props),
+                  },
+                })}
+              </span>
+              <button type="button">
+                <PiDotsThree className="text-2xl" />
+              </button>
+            </div>
+          </div>
+
           <p>{post.content}</p>
-          <button
-            type="button"
-            className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-          >
-            <PiHeart className="text-2xl" />
-          </button>
 
-          <button
-            type="button"
-            className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-          >
-            <PiChatCircle className="text-2xl" />
-          </button>
+          <div className="relative right-[0.4rem] mt-[6px]">
+            <button
+              type="button"
+              className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+            >
+              <PiHeart className="text-2xl" />
+            </button>
+
+            <button
+              type="button"
+              className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+            >
+              <PiChatCircle className="text-2xl" />
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <span className="text-zinc-500">
-          {formatDistanceToNowStrict(post.createdAt, {
-            addSuffix: false,
-            locale: {
-              formatDistance: (...props) => formatDistance(...props),
-            },
-          })}
-        </span>
-        <button type="button">
-          <PiDotsThree className="text-2xl" />
-        </button>
       </div>
     </div>
   );
