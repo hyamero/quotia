@@ -1,6 +1,7 @@
 import type { Session } from "next-auth";
 import type { Post } from "~/lib/useStore";
-import { formatDistance } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
+import { formatDistance } from "~/hooks/format-distance";
 import { PiChatCircle, PiDotsThree, PiHeart } from "react-icons/pi";
 import {
   Avatar,
@@ -48,8 +49,11 @@ export const PostItem = ({ session, post }: PostItemProps) => {
 
       <div className="flex items-center gap-2">
         <span className="text-zinc-500">
-          {formatDistance(post.createdAt, new Date(), {
-            addSuffix: true,
+          {formatDistanceToNowStrict(post.createdAt, {
+            addSuffix: false,
+            locale: {
+              formatDistance: (...props) => formatDistance(...props),
+            },
           })}
         </span>
         <button type="button">
