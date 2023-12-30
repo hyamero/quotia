@@ -1,15 +1,23 @@
 import type { Session } from "next-auth";
 import type { Post } from "~/lib/useStore";
-import { formatDistanceToNowStrict } from "date-fns";
+import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 import { formatDistance } from "~/hooks/format-distance";
 import { PiChatCircle, PiHeart } from "react-icons/pi";
+
+import { PostDropdownMenu } from "./post-dropdown-menu";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "~/app/components/ui/avatar";
-import { PostDropdownMenu } from "./post-dropdown-menu";
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/app/components/ui/tooltip";
 
 type PostItemProps = {
   session: Session;
@@ -34,14 +42,26 @@ export function PostItem({ session, post }: PostItemProps) {
           <div className="flex justify-between">
             <span className="font-semibold">{session.user.name}</span>
             <div className="flex items-center gap-2">
-              <span className="text-zinc-500">
-                {formatDistanceToNowStrict(post.createdAt, {
-                  addSuffix: false,
-                  locale: {
-                    formatDistance: (...props) => formatDistance(...props),
-                  },
-                })}
-              </span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    {" "}
+                    <span className="select-none text-zinc-500">
+                      {formatDistanceToNowStrict(post.createdAt, {
+                        addSuffix: false,
+                        locale: {
+                          formatDistance: (...props) =>
+                            formatDistance(...props),
+                        },
+                      })}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <span>{formatRelative(post.createdAt, new Date())}</span>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
               <PostDropdownMenu session={session} post={post} />
             </div>
           </div>
