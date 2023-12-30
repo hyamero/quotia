@@ -166,12 +166,12 @@ const CreatePostTrigger = ({
         <AvatarFallback>{session?.user.name?.split(" ").at(0)}</AvatarFallback>
       </Avatar>
 
-      <p
+      <span
         onClick={() => setOpen(!open)}
-        className="w-full cursor-text text-zinc-500"
+        className="w-full cursor-text select-none text-zinc-500"
       >
         Start a quote...
-      </p>
+      </span>
 
       <Button
         disabled

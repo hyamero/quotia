@@ -2,12 +2,14 @@ import type { Session } from "next-auth";
 import type { Post } from "~/lib/useStore";
 import { formatDistanceToNowStrict } from "date-fns";
 import { formatDistance } from "~/hooks/format-distance";
-import { PiChatCircle, PiDotsThree, PiHeart } from "react-icons/pi";
+import { PiChatCircle, PiHeart } from "react-icons/pi";
+
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "~/app/components/ui/avatar";
+import { PostDropdownMenu } from "./post-dropdown-menu";
 
 type PostItemProps = {
   session: Session;
@@ -40,9 +42,7 @@ export function PostItem({ session, post }: PostItemProps) {
                   },
                 })}
               </span>
-              <button type="button">
-                <PiDotsThree className="text-2xl" />
-              </button>
+              <PostDropdownMenu session={session} post={post} />
             </div>
           </div>
 
