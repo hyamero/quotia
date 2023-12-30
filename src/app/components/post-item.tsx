@@ -14,7 +14,7 @@ type PostItemProps = {
   post: Post;
 };
 
-export const PostItem = ({ session, post }: PostItemProps) => {
+export function PostItem({ session, post }: PostItemProps) {
   if (!session.user || !post) return;
 
   return (
@@ -67,4 +67,4 @@ export const PostItem = ({ session, post }: PostItemProps) => {
       </div>
     </div>
   );
-};
+}

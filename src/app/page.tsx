@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-white">
       {session?.user && (
-        <div className="w-full max-w-screen-sm">
+        <div className="my-20 w-full max-w-screen-sm">
           <CreatePost session={session} />
           <Posts session={session} />
         </div>
