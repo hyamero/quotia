@@ -90,7 +90,7 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
       toast.success("Post created!");
       setInputValue("");
     },
-    onMutate: () => toast.info("Creating post..."),
+    onMutate: () => toast.loading("Creating post..."),
     onError: (err) => {
       toast.error(err.message);
     },

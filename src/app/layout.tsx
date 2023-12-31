@@ -26,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
-          <Toaster richColors />
+          <Toaster />
           {children}
         </TRPCReactProvider>
       </body>
