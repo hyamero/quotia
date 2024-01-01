@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Post =
+export type PostItem =
   | {
       id: string;
       authorId: string;
@@ -10,9 +10,21 @@ export type Post =
     }
   | undefined;
 
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+  emailVerified: Date | null;
+  image: string | null;
+};
+
+export type Post = PostItem & {
+  author: User;
+};
+
 type PostState = {
-  tempPosts: Post[];
-  setTempPosts: (newPost: Post) => void;
+  tempPosts: PostItem[];
+  setTempPosts: (newPost: PostItem) => void;
 };
 
 export const useStore = create<PostState>()((set) => ({
