@@ -14,7 +14,7 @@ export function Posts({ session, allPosts }: PostsProps) {
   const { tempPosts } = useStore();
 
   return (
-    <div className="w-full max-w-screen-sm">
+    <div className="w-full max-w-lg xl:max-w-screen-sm">
       <CreatePost session={session} />
 
       {session && tempPosts
