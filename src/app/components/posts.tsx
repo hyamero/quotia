@@ -2,7 +2,7 @@
 
 import { PostItem } from "./post-item";
 import { type Session } from "next-auth";
-import { useStore, type Post } from "~/lib/useStore";
+import { type Post, useTempPosts } from "~/lib/usePostStore";
 import { CreatePost } from "./create-post";
 
 type PostsProps = {
@@ -11,10 +11,10 @@ type PostsProps = {
 };
 
 export function Posts({ session, allPosts }: PostsProps) {
-  const { tempPosts } = useStore();
+  const tempPosts = useTempPosts();
 
   return (
-    <div className="w-full max-w-lg xl:max-w-screen-sm">
+    <div className="mt-24 w-full max-w-lg xl:max-w-xl">
       <CreatePost session={session} />
 
       {session && tempPosts

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Session } from "next-auth";
-import type { Post } from "~/lib/useStore";
+import type { Post } from "~/lib/usePostStore";
 import { PiDotsThree } from "react-icons/pi";
 
 import {

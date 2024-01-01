@@ -8,7 +8,7 @@ import {
   useEffect,
 } from "react";
 
-import { useStore } from "~/lib/useStore";
+import { usePostActions } from "~/lib/usePostStore";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 
@@ -63,7 +63,7 @@ type CreatePostFormProps = {
 
 const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
   const [inputValue, setInputValue] = useState("");
-  const { setTempPosts } = useStore();
+  const { setTempPosts } = usePostActions();
 
   // Dynamic Textarea Height
 

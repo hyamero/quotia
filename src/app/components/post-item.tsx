@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import type { Post, PostItem } from "~/lib/useStore";
+import type { Post, PostItem } from "~/lib/usePostStore";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 import { formatDistance } from "~/hooks/format-distance";
 import { PiChatCircle, PiHeart } from "react-icons/pi";
