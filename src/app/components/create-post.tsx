@@ -126,7 +126,7 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
             maxLength={500}
             placeholder="Start a quote..."
             onChange={(e) => setInputValue(e.target.value)}
-            className="w-full flex-grow resize-none overflow-hidden bg-background pb-4 pr-4 outline-none placeholder:text-zinc-500"
+            className="max-h-[350px] w-full flex-grow resize-none overflow-auto bg-background pb-4 pr-4 outline-none placeholder:text-zinc-500"
           />
         </div>
       </div>
