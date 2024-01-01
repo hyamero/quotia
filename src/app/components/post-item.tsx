@@ -1,5 +1,5 @@
 import type { Session } from "next-auth";
-import type { Post } from "~/lib/useStore";
+import type { Post, PostItem } from "~/lib/useStore";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 import { formatDistance } from "~/hooks/format-distance";
 import { PiChatCircle, PiHeart } from "react-icons/pi";
@@ -20,12 +20,12 @@ import {
 } from "~/app/components/ui/tooltip";
 
 type PostItemProps = {
-  session: Session;
+  session?: Session;
   post: Post;
 };
 
 export function PostItem({ session, post }: PostItemProps) {
-  if (!session.user || !post) return;
+  const authorPost = post.authorId === session?.user.id;
 
   return (
     <div className="flex items-start justify-between border-t py-5">
@@ -33,14 +33,24 @@ export function PostItem({ session, post }: PostItemProps) {
         <Avatar className="relative top-1">
           <AvatarImage
             className="rounded-full"
-            src={session.user.image as string | undefined}
+            src={
+              authorPost
+                ? (session.user.image as string | undefined)
+                : (post.author.image as string | undefined)
+            }
           />
-          <AvatarFallback>{session.user.name?.split(" ").at(0)}</AvatarFallback>
+          <AvatarFallback>
+            {authorPost
+              ? session.user.name
+              : post.author.name?.split(" ").at(0)}
+          </AvatarFallback>
         </Avatar>
 
         <div className="w-full">
           <div className="flex justify-between">
-            <span className="font-semibold">{session.user.name}</span>
+            <span className="font-semibold">
+              {authorPost ? session.user.name : post.author.name}
+            </span>
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
