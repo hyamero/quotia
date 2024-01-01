@@ -1,19 +1,15 @@
 import Link from "next/link";
 import { getServerAuthSession } from "~/server/auth";
 import { Posts } from "./components/posts";
-import { CreatePost } from "./components/create-post";
+import { api } from "~/trpc/server";
 
 export default async function Home() {
   const session = await getServerAuthSession();
+  const allPosts = await api.post.getAll.query();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-white">
-      {session?.user && (
-        <div className="my-20 w-full max-w-screen-sm">
-          <CreatePost session={session} />
-          <Posts session={session} />
-        </div>
-      )}
+      <Posts session={session} allPosts={allPosts} />
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
         <div className="flex flex-col items-center justify-center gap-4">
           <p className="text-center text-2xl text-white">

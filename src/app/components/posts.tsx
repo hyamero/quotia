@@ -1,21 +1,36 @@
-import { api } from "~/trpc/server";
+"use client";
+
 import { PostItem } from "./post-item";
 import { type Session } from "next-auth";
-import { TemporaryPosts } from "./temporary-posts";
+import { useStore, type Post } from "~/lib/useStore";
+import { CreatePost } from "./create-post";
 
-export async function Posts({ session }: { session: Session }) {
-  const allPosts = await api.post.getAll.query();
+type PostsProps = {
+  session?: Session | null;
+  allPosts: Post[] | null;
+};
+
+export function Posts({ session, allPosts }: PostsProps) {
+  const { tempPosts } = useStore();
 
   return (
-    <div className="w-full">
-      <TemporaryPosts session={session} />
+    <div className="w-full max-w-screen-sm">
+      <CreatePost session={session} />
 
-      {allPosts ? (
-        allPosts.map((post) => {
-          return <PostItem key={post.id} session={session} post={post} />;
+      {session && tempPosts
+        ? tempPosts.map((post) => {
+            return (
+              <PostItem key={post!.id} session={session} post={post as Post} />
+            );
+          })
+        : null}
+
+      {allPosts?.length !== 0 ? (
+        allPosts?.map((post) => {
+          return <PostItem key={post.id} post={post} />;
         })
       ) : (
-        <p>No posts yet.</p>
+        <p className="text-3xl font-bold text-white">No posts yet.</p>
       )}
     </div>
   );

@@ -26,9 +26,11 @@ import {
   AvatarImage,
 } from "~/app/components/ui/avatar";
 
-export function CreatePost({ session }: { session?: Session }) {
+export function CreatePost({ session }: { session?: Session | null }) {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  if (!session) return <CreatePostTrigger />;
 
   if (isDesktop) {
     return (
@@ -147,8 +149,8 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
 
 type CreatePostTriggerProps = {
   session?: Session;
-  open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CreatePostTrigger = ({
@@ -166,12 +168,15 @@ const CreatePostTrigger = ({
         <AvatarFallback>{session?.user.name?.split(" ").at(0)}</AvatarFallback>
       </Avatar>
 
-      <span
-        onClick={() => setOpen(!open)}
-        className="w-full cursor-text select-none text-zinc-500"
+      <button
+        onClick={() => {
+          if (setOpen) setOpen(!open);
+        }}
+        className="w-full cursor-text select-none text-left text-zinc-500"
+        disabled={!session}
       >
         Start a quote...
-      </span>
+      </button>
 
       <Button
         disabled
