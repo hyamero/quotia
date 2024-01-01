@@ -1,23 +1,23 @@
 "use client";
 
 import {
-  type FormEvent,
-  useState,
   useRef,
-  useCallback,
+  useState,
   useEffect,
+  useCallback,
+  type FormEvent,
 } from "react";
 
-import { usePostActions } from "~/lib/usePostStore";
-import { api } from "~/trpc/react";
 import { toast } from "sonner";
-
+import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
+
 import useMediaQuery from "~/hooks/use-media-query";
+import { usePostActions, usePostModal } from "~/lib/usePostStore";
 
 import { Dialog, DialogContent } from "~/app/components/ui/dialog";
 
-import { Drawer, DrawerContent, DrawerHeader } from "./ui/drawer";
+import { Drawer, DrawerContent } from "./ui/drawer";
 
 import { Button } from "./ui/button";
 import {
@@ -27,30 +27,45 @@ import {
 } from "~/app/components/ui/avatar";
 
 export function CreatePost({ session }: { session?: Session | null }) {
-  const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  if (!session) return <CreatePostTrigger />;
+  const createPostIsOpen = usePostModal();
+  const { setCreatePostIsOpen } = usePostActions();
+
+  if (!session)
+    return (
+      <CreatePostTrigger
+        setOpen={setCreatePostIsOpen}
+        open={createPostIsOpen}
+      />
+    );
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <CreatePostTrigger session={session} setOpen={setOpen} open={open} />
+      <Dialog open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
+        <CreatePostTrigger
+          session={session}
+          open={createPostIsOpen}
+          setOpen={setCreatePostIsOpen}
+        />
         <DialogContent>
           {/* Form Component */}
-          <CreatePostForm session={session} setOpen={setOpen} />
+          <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
         </DialogContent>
       </Dialog>
     );
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <CreatePostTrigger session={session} setOpen={setOpen} open={open} />
+    <Drawer open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
+      <CreatePostTrigger
+        open={createPostIsOpen}
+        session={session}
+        setOpen={setCreatePostIsOpen}
+      />
       <DrawerContent className="px-7 pb-20">
-        <DrawerHeader className="text-left"></DrawerHeader>
         {/* Form Component */}
-        <CreatePostForm session={session} setOpen={setOpen} />
+        <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
       </DrawerContent>
     </Drawer>
   );
@@ -58,7 +73,7 @@ export function CreatePost({ session }: { session?: Session | null }) {
 
 type CreatePostFormProps = {
   session?: Session;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpen: (modalState: boolean) => void;
 };
 
 const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
@@ -103,7 +118,7 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
 
     if (inputValue.trim() === "") return;
     createPost.mutate({ content: inputValue });
-    setOpen(false);
+    setOpen(!open);
   };
 
   return (
@@ -149,14 +164,14 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
 
 type CreatePostTriggerProps = {
   session?: Session;
-  open?: boolean;
-  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+  setOpen: (modalState: boolean) => void;
 };
 
 const CreatePostTrigger = ({
   session,
-  open,
   setOpen,
+  open,
 }: CreatePostTriggerProps) => {
   return (
     <div className="flex items-center gap-4 py-5">
@@ -170,7 +185,7 @@ const CreatePostTrigger = ({
 
       <button
         onClick={() => {
-          if (setOpen) setOpen(!open);
+          setOpen(!open);
         }}
         className="w-full cursor-text select-none text-left text-zinc-500"
         disabled={!session}

@@ -28,7 +28,7 @@ type PostState = {
 
   actions: {
     setTempPosts: (newPost: PostItem) => void;
-    setCreatePostIsOpen: () => void;
+    setCreatePostIsOpen: (modalState: boolean) => void;
   };
 };
 
@@ -41,9 +41,9 @@ const usePostStore = create<PostState>()((set) => ({
       set((state) => ({
         tempPosts: [newPost, ...state.tempPosts],
       })),
-    setCreatePostIsOpen: () =>
-      set((state) => ({
-        createPostIsOpen: !state.createPostIsOpen,
+    setCreatePostIsOpen: (modalState) =>
+      set(() => ({
+        createPostIsOpen: modalState,
       })),
   },
 }));
