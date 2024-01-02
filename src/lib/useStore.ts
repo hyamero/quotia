@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { Session } from "next-auth";
 
 type PostItem = {
   id: string;
@@ -24,12 +25,12 @@ export type Post = PostItem & {
  * Temporary Posts (for optimistic UI when creating a new post)
  */
 
-type TempPost = {
+type TempPostStore = {
   tempPosts: Post[];
   setTempPosts: (newPost: Post | undefined) => void;
 };
 
-export const useTempPostStore = create<TempPost>()((set) => ({
+export const useTempPostStore = create<TempPostStore>()((set) => ({
   tempPosts: [],
 
   setTempPosts: (newPost) =>
@@ -45,10 +46,37 @@ export const useSetTempPosts = () =>
   useTempPostStore((state) => state.setTempPosts);
 
 /**
+ * Store session data for client-side use
+ */
+
+type SessionStore = {
+  user: Session["user"];
+  setSession: (newSession: Session["user"]) => void;
+};
+
+const useSessionStore = create<SessionStore>()((set) => ({
+  user: {
+    id: "",
+    name: "",
+    email: "",
+    image: "",
+  },
+
+  setSession: (newSession) =>
+    set(() => ({
+      user: newSession,
+    })),
+}));
+
+export const useUser = () => useSessionStore((state) => state.user);
+
+export const useSetSession = () => useSessionStore((state) => state.setSession);
+
+/**
  * CreatePostModal (for opening and closing the create post modal)
  */
 
-type CreatePostModal = {
+type CreatePostModalStore = {
   createPostIsOpen: boolean;
 
   actions: {
@@ -57,7 +85,7 @@ type CreatePostModal = {
   };
 };
 
-const useCreatePostModal = create<CreatePostModal>()((set) => ({
+const useCreatePostModalStore = create<CreatePostModalStore>()((set) => ({
   createPostIsOpen: false,
 
   actions: {
@@ -71,7 +99,7 @@ const useCreatePostModal = create<CreatePostModal>()((set) => ({
 }));
 
 export const usePostModalState = () =>
-  useCreatePostModal((state) => state.createPostIsOpen);
+  useCreatePostModalStore((state) => state.createPostIsOpen);
 
 export const usePostModalActions = () =>
-  useCreatePostModal((state) => state.actions);
+  useCreatePostModalStore((state) => state.actions);
