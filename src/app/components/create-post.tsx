@@ -13,7 +13,11 @@ import { api } from "~/trpc/react";
 import { type Session } from "next-auth";
 
 import useMediaQuery from "~/hooks/use-media-query";
-import { usePostActions, usePostModal } from "~/lib/usePostStore";
+import {
+  usePostModalActions,
+  usePostModalState,
+  useSetTempPosts,
+} from "~/lib/useStore";
 
 import { Dialog, DialogContent } from "~/app/components/ui/dialog";
 
@@ -29,25 +33,15 @@ import {
 export function CreatePost({ session }: { session?: Session | null }) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const createPostIsOpen = usePostModal();
-  const { setCreatePostIsOpen } = usePostActions();
+  const createPostIsOpen = usePostModalState();
+  const { setCreatePostIsOpen } = usePostModalActions();
 
-  if (!session)
-    return (
-      <CreatePostTrigger
-        setOpen={setCreatePostIsOpen}
-        open={createPostIsOpen}
-      />
-    );
+  if (!session) return <CreatePostTrigger />;
 
   if (isDesktop) {
     return (
       <Dialog open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-        <CreatePostTrigger
-          session={session}
-          open={createPostIsOpen}
-          setOpen={setCreatePostIsOpen}
-        />
+        <CreatePostTrigger session={session} />
         <DialogContent>
           {/* Form Component */}
           <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
@@ -58,11 +52,7 @@ export function CreatePost({ session }: { session?: Session | null }) {
 
   return (
     <Drawer open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-      <CreatePostTrigger
-        open={createPostIsOpen}
-        session={session}
-        setOpen={setCreatePostIsOpen}
-      />
+      <CreatePostTrigger session={session} />
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
         <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
@@ -78,7 +68,7 @@ type CreatePostFormProps = {
 
 const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
   const [inputValue, setInputValue] = useState("");
-  const { setTempPosts } = usePostActions();
+  const setTempPosts = useSetTempPosts();
 
   // Dynamic Textarea Height
 
@@ -99,7 +89,9 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
     updateTextAreaSize(textAreaRef.current);
   }, [inputValue]);
 
-  // ------
+  /**
+   * Create Post Mutation
+   */
 
   const createPost = api.post.create.useMutation({
     onSuccess: (data) => {
@@ -164,15 +156,11 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
 
 type CreatePostTriggerProps = {
   session?: Session;
-  open: boolean;
-  setOpen: (modalState: boolean) => void;
 };
 
-const CreatePostTrigger = ({
-  session,
-  setOpen,
-  open,
-}: CreatePostTriggerProps) => {
+const CreatePostTrigger = ({ session }: CreatePostTriggerProps) => {
+  const { toggleCreatePostIsOpen } = usePostModalActions();
+
   return (
     <div className="flex items-center gap-4 py-5">
       <Avatar className="pointer-events-none">
@@ -184,11 +172,9 @@ const CreatePostTrigger = ({
       </Avatar>
 
       <button
-        onClick={() => {
-          setOpen(!open);
-        }}
-        className="w-full cursor-text select-none text-left text-zinc-500"
+        onClick={toggleCreatePostIsOpen}
         disabled={!session}
+        className="w-full cursor-text select-none text-left text-zinc-500"
       >
         Start a quote...
       </button>

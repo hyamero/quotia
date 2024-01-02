@@ -2,7 +2,7 @@
 
 import { PostItem } from "./post-item";
 import { type Session } from "next-auth";
-import { type Post, useTempPosts } from "~/lib/usePostStore";
+import { type Post, useTempPosts } from "~/lib/useStore";
 import { CreatePost } from "./create-post";
 
 type PostsProps = {
