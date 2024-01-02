@@ -1,7 +1,6 @@
 "use client";
 
-import type { Session } from "next-auth";
-import type { Post } from "~/lib/usePostStore";
+import { toast } from "sonner";
 import { PiDotsThree } from "react-icons/pi";
 
 import {
@@ -11,17 +10,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/app/components/ui/dropdown-menu";
-import { toast } from "sonner";
 
-type PostDropdownMenuProps = {
-  session?: Session;
-  post?: Post;
-};
-
-export function PostDropdownMenu({ session, post }: PostDropdownMenuProps) {
+export function PostDropdownMenu({ isAuthor }: { isAuthor?: boolean }) {
   return (
     <>
-      {session?.user.id === post?.authorId ? (
+      {isAuthor ? (
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
             <PiDotsThree className="text-2xl" />

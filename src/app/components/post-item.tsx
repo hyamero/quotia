@@ -1,8 +1,8 @@
 import type { Session } from "next-auth";
-import type { Post, PostItem } from "~/lib/usePostStore";
-import { formatDistanceToNowStrict, formatRelative } from "date-fns";
-import { formatDistance } from "~/hooks/format-distance";
+import type { Post } from "~/lib/usePostStore";
 import { PiChatCircle, PiHeart } from "react-icons/pi";
+import { formatDistance } from "~/hooks/format-distance";
+import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
 import { PostDropdownMenu } from "./post-dropdown-menu";
 
@@ -20,12 +20,12 @@ import {
 } from "~/app/components/ui/tooltip";
 
 type PostItemProps = {
-  session?: Session;
+  session?: Session | null;
   post: Post;
 };
 
 export function PostItem({ session, post }: PostItemProps) {
-  const authorPost = post.authorId === session?.user.id;
+  const isAuthor = session?.user?.id === post.authorId;
 
   return (
     <div className="flex items-start justify-between border-t py-5">
@@ -33,29 +33,18 @@ export function PostItem({ session, post }: PostItemProps) {
         <Avatar className="relative top-1">
           <AvatarImage
             className="rounded-full"
-            src={
-              authorPost
-                ? (session.user.image as string | undefined)
-                : (post.author.image as string | undefined)
-            }
+            src={post.author.image as string | undefined}
           />
-          <AvatarFallback>
-            {authorPost
-              ? session.user.name
-              : post.author.name?.split(" ").at(0)}
-          </AvatarFallback>
+          <AvatarFallback>{post.author.name?.split(" ").at(0)}</AvatarFallback>
         </Avatar>
 
         <div className="w-full">
           <div className="flex justify-between">
-            <span className="font-semibold">
-              {authorPost ? session.user.name : post.author.name}
-            </span>
+            <span className="font-semibold">{post.author.name}</span>
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
-                    {" "}
                     <span className="select-none text-zinc-500">
                       {formatDistanceToNowStrict(post.createdAt, {
                         addSuffix: false,
@@ -71,8 +60,10 @@ export function PostItem({ session, post }: PostItemProps) {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-
-              <PostDropdownMenu session={session} post={post} />
+              {/* 
+               DropDownMenu
+              */}
+              <PostDropdownMenu isAuthor={isAuthor} />
             </div>
           </div>
 

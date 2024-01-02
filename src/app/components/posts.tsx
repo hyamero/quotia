@@ -17,17 +17,15 @@ export function Posts({ session, allPosts }: PostsProps) {
     <div className="mt-24 w-full max-w-lg xl:max-w-xl">
       <CreatePost session={session} />
 
-      {session && tempPosts
+      {session && tempPosts.length !== 0
         ? tempPosts.map((post) => {
-            return (
-              <PostItem key={post!.id} session={session} post={post as Post} />
-            );
+            return <PostItem key={post.id} post={post} session={session} />;
           })
         : null}
 
       {allPosts?.length !== 0 ? (
         allPosts?.map((post) => {
-          return <PostItem key={post.id} post={post} />;
+          return <PostItem key={post.id} post={post} session={session} />;
         })
       ) : (
         <p className="text-3xl font-bold text-white">No posts yet.</p>
