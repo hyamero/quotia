@@ -1,5 +1,4 @@
-import type { Session } from "next-auth";
-import type { Post } from "~/lib/useStore";
+import { type Post, useUser } from "~/lib/useStore";
 import { PiChatCircle, PiHeart } from "react-icons/pi";
 import { formatDistance } from "~/hooks/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
@@ -19,13 +18,9 @@ import {
   TooltipTrigger,
 } from "~/app/components/ui/tooltip";
 
-type PostItemProps = {
-  session?: Session | null;
-  post: Post;
-};
-
-export function PostItem({ session, post }: PostItemProps) {
-  const isAuthor = session?.user?.id === post.authorId;
+export function PostItem({ post }: { post: Post }) {
+  const user = useUser();
+  const isAuthor = user?.id === post.authorId;
 
   return (
     <div className="flex items-start justify-between border-t py-5">

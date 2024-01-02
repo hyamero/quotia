@@ -10,13 +10,14 @@ import {
 
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import { type Session } from "next-auth";
+import type { Session } from "next-auth";
 
 import useMediaQuery from "~/hooks/use-media-query";
 import {
   usePostModalActions,
   usePostModalState,
   useSetTempPosts,
+  useUser,
 } from "~/lib/useStore";
 
 import { Dialog, DialogContent } from "~/app/components/ui/dialog";
@@ -30,21 +31,22 @@ import {
   AvatarFallback,
 } from "~/app/components/ui/avatar";
 
-export function CreatePost({ session }: { session?: Session | null }) {
+export function CreatePost() {
+  const user = useUser();
+
   const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  const createPostIsOpen = usePostModalState();
   const { setCreatePostIsOpen } = usePostModalActions();
+  const createPostIsOpen = usePostModalState();
 
-  if (!session) return <CreatePostTrigger />;
+  if (!user) return <CreatePostTrigger />;
 
   if (isDesktop) {
     return (
       <Dialog open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-        <CreatePostTrigger session={session} />
+        <CreatePostTrigger user={user} />
         <DialogContent>
           {/* Form Component */}
-          <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
+          <CreatePostForm user={user} />
         </DialogContent>
       </Dialog>
     );
@@ -52,21 +54,17 @@ export function CreatePost({ session }: { session?: Session | null }) {
 
   return (
     <Drawer open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-      <CreatePostTrigger session={session} />
+      <CreatePostTrigger user={user} />
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
-        <CreatePostForm session={session} setOpen={setCreatePostIsOpen} />
+        <CreatePostForm user={user} />
       </DrawerContent>
     </Drawer>
   );
 }
 
-type CreatePostFormProps = {
-  session?: Session;
-  setOpen: (modalState: boolean) => void;
-};
-
-const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
+const CreatePostForm = ({ user }: { user: Session["user"] }) => {
+  const { toggleCreatePostIsOpen } = usePostModalActions();
   const [inputValue, setInputValue] = useState("");
   const setTempPosts = useSetTempPosts();
 
@@ -110,7 +108,7 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
 
     if (inputValue.trim() === "") return;
     createPost.mutate({ content: inputValue });
-    setOpen(!open);
+    toggleCreatePostIsOpen();
   };
 
   return (
@@ -122,12 +120,12 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
         <Avatar>
           <AvatarImage
             className="rounded-full"
-            src={session?.user.image as string | undefined}
+            src={user.image as string | undefined}
           />
-          <AvatarFallback>{session?.user.name}</AvatarFallback>
+          <AvatarFallback>{user.name}</AvatarFallback>
         </Avatar>
         <div className="w-full">
-          <p className="text-base font-semibold">{session?.user.name}</p>
+          <p className="text-base font-semibold">{user.name}</p>
           <textarea
             ref={inputRef}
             value={inputValue}
@@ -154,11 +152,7 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
   );
 };
 
-type CreatePostTriggerProps = {
-  session?: Session;
-};
-
-const CreatePostTrigger = ({ session }: CreatePostTriggerProps) => {
+const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
   const { toggleCreatePostIsOpen } = usePostModalActions();
 
   return (
@@ -166,14 +160,14 @@ const CreatePostTrigger = ({ session }: CreatePostTriggerProps) => {
       <Avatar className="pointer-events-none">
         <AvatarImage
           className="rounded-full"
-          src={session?.user.image as string | undefined}
+          src={user?.image as string | undefined}
         />
-        <AvatarFallback>{session?.user.name?.split(" ").at(0)}</AvatarFallback>
+        <AvatarFallback>{user?.name?.split(" ").at(0)}</AvatarFallback>
       </Avatar>
 
       <button
         onClick={toggleCreatePostIsOpen}
-        disabled={!session}
+        disabled={!user}
         className="w-full cursor-text select-none text-left text-zinc-500"
       >
         Start a quote...

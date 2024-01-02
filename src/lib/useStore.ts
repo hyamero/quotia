@@ -50,8 +50,8 @@ export const useSetTempPosts = () =>
  */
 
 type SessionStore = {
-  user: Session["user"];
-  setSession: (newSession: Session["user"]) => void;
+  user: Session["user"] | null;
+  setSession: (newSession: Session["user"] | null) => void;
 };
 
 const useSessionStore = create<SessionStore>()((set) => ({
