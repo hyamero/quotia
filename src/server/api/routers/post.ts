@@ -21,6 +21,10 @@ export const postRouter = createTRPCRouter({
       return ctx.db.query.posts.findFirst({
         where: (posts, { eq }) => eq(posts.authorId, ctx.session.user.id),
         orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+
+        with: {
+          author: true,
+        },
       });
     }),
 

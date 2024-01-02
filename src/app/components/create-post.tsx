@@ -22,8 +22,8 @@ import { Drawer, DrawerContent } from "./ui/drawer";
 import { Button } from "./ui/button";
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
+  AvatarFallback,
 } from "~/app/components/ui/avatar";
 
 export function CreatePost({ session }: { session?: Session | null }) {
@@ -108,8 +108,8 @@ const CreatePostForm = ({ session, setOpen }: CreatePostFormProps) => {
       setInputValue("");
     },
     onMutate: () => toast.loading("Creating post..."),
-    onError: (err) => {
-      toast.error(err.message);
+    onError: () => {
+      toast.error("Something went wrong. Try again later.");
     },
   });
 

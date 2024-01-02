@@ -1,14 +1,12 @@
 import { create } from "zustand";
 
-export type PostItem =
-  | {
-      id: string;
-      authorId: string;
-      content: string | null;
-      createdAt: Date;
-      updatedAt: Date | null;
-    }
-  | undefined;
+type PostItem = {
+  id: string;
+  authorId: string;
+  content: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
 
 type User = {
   id: string;
@@ -23,11 +21,11 @@ export type Post = PostItem & {
 };
 
 type PostState = {
-  tempPosts: PostItem[];
+  tempPosts: Post[];
   createPostIsOpen: boolean;
 
   actions: {
-    setTempPosts: (newPost: PostItem) => void;
+    setTempPosts: (newPost: Post | undefined) => void;
     setCreatePostIsOpen: (modalState: boolean) => void;
   };
 };
@@ -38,6 +36,7 @@ const usePostStore = create<PostState>()((set) => ({
 
   actions: {
     setTempPosts: (newPost) =>
+      newPost &&
       set((state) => ({
         tempPosts: [newPost, ...state.tempPosts],
       })),
