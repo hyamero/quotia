@@ -17,10 +17,25 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "~/app/components/ui/tooltip";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
   const isAuthor = user?.id === post.authorId;
+
+  const toggleLike = api.post.toggleLike.useMutation({
+    onSuccess: (data) => {
+      if (data.addedLike === true) {
+        toast.success("Liked");
+      } else {
+        toast.success("Unliked");
+      }
+    },
+    onError: () => {
+      toast.error("Something went wrong. Try again later.");
+    },
+  });
 
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
@@ -68,6 +83,7 @@ export function PostItem({ post }: { post: Post }) {
             <button
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+              onClick={() => toggleLike.mutate({ postId: post.id })}
             >
               <PiHeart className="text-2xl" />
             </button>
