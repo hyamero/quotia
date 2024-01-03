@@ -6,6 +6,7 @@ import { type Post, useTempPosts, useSetSession } from "~/lib/useStore";
 
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
+import { useEffect } from "react";
 
 type PostsProps = {
   session?: Session | null;
@@ -16,8 +17,10 @@ export function Posts({ session, allPosts }: PostsProps) {
   const tempPosts = useTempPosts();
   const setSession = useSetSession();
 
-  if (session) setSession(session.user);
-  else setSession(null);
+  useEffect(() => {
+    if (session) setSession(session.user);
+    else setSession(null);
+  }, [session]);
 
   return (
     <div className="mt-24 w-full max-w-lg xl:max-w-xl">
