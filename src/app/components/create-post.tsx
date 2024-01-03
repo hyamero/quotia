@@ -11,20 +11,19 @@ import {
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import type { Session } from "next-auth";
-
 import useMediaQuery from "~/hooks/use-media-query";
+
 import {
-  usePostModalActions,
-  usePostModalState,
-  useSetTempPosts,
   useUser,
+  useSetTempPosts,
+  usePostModalState,
+  usePostModalActions,
 } from "~/lib/useStore";
 
+import { Button } from "./ui/button";
+import { Drawer, DrawerContent } from "./ui/drawer";
 import { Dialog, DialogContent } from "~/app/components/ui/dialog";
 
-import { Drawer, DrawerContent } from "./ui/drawer";
-
-import { Button } from "./ui/button";
 import {
   Avatar,
   AvatarImage,
@@ -43,7 +42,7 @@ export function CreatePost() {
   if (isDesktop) {
     return (
       <Dialog open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-        <CreatePostTrigger user={user} />
+        {isDesktop && <CreatePostTrigger user={user} />}
         <DialogContent>
           {/* Form Component */}
           <CreatePostForm user={user} />
@@ -54,7 +53,7 @@ export function CreatePost() {
 
   return (
     <Drawer open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-      <CreatePostTrigger user={user} />
+      {isDesktop && <CreatePostTrigger user={user} />}
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
         <CreatePostForm user={user} />

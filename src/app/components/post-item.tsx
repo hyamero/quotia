@@ -7,15 +7,15 @@ import { PostDropdownMenu } from "./post-dropdown-menu";
 
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
+  AvatarFallback,
 } from "~/app/components/ui/avatar";
 
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
+  TooltipProvider,
 } from "~/app/components/ui/tooltip";
 
 export function PostItem({ post }: { post: Post }) {
@@ -23,7 +23,7 @@ export function PostItem({ post }: { post: Post }) {
   const isAuthor = user?.id === post.authorId;
 
   return (
-    <div className="flex items-start justify-between border-t py-5">
+    <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
       <div className="flex w-full items-start gap-3">
         <Avatar className="relative top-1">
           <AvatarImage
@@ -64,7 +64,7 @@ export function PostItem({ post }: { post: Post }) {
 
           <p>{post.content}</p>
 
-          <div className="relative right-[0.4rem] mt-[6px]">
+          <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
             <button
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"

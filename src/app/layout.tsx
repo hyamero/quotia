@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 
+import { Navbar } from "./components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/components/ui/sonner";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className={`px-4 font-sans sm:px-10 ${inter.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <Toaster />
+          <Navbar />
           {children}
         </TRPCReactProvider>
       </body>
