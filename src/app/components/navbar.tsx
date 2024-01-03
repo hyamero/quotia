@@ -1,17 +1,28 @@
 "use client";
 
+import Link from "next/link";
+import { usePostModalActions, useUser } from "~/lib/useStore";
+
 import {
   PiHouseFill,
   PiHeartBold,
   PiQuotesFill,
   PiMagnifyingGlassBold,
 } from "react-icons/pi";
+
 import { BiUser } from "react-icons/bi";
+import { CgMenuRight } from "react-icons/cg";
 import { RiDoubleQuotesL } from "react-icons/ri";
 
-import Link from "next/link";
-import { CgMenuRight } from "react-icons/cg";
-import { usePostModalActions } from "~/lib/useStore";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/app/components/ui/sheet";
+import { Button } from "./ui/button";
 
 export function Navbar() {
   const { toggleCreatePostIsOpen } = usePostModalActions();
@@ -26,12 +37,7 @@ export function Navbar() {
           <RiDoubleQuotesL />
         </Link>
 
-        <button
-          type="button"
-          className="col-start-3 mr-7 place-self-end self-center text-3xl text-zinc-500 md:text-[1.75rem]"
-        >
-          <CgMenuRight />
-        </button>
+        <BurgerMenu />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 mx-auto flex max-w-screen-sm items-center justify-center gap-3 bg-zinc-950 bg-opacity-40 bg-clip-padding p-2 text-3xl backdrop-blur-xl backdrop-filter sm:px-10 md:bottom-auto md:top-0 md:z-50 md:bg-transparent md:px-14 md:text-[1.75rem] md:backdrop-blur-none [&>*:hover]:bg-zinc-900 [&>*]:flex [&>*]:w-full [&>*]:justify-center [&>*]:rounded-lg [&>*]:py-5 [&>*]:text-center [&>*]:text-zinc-700 [&>*]:transition-colors [&>*]:duration-300">
@@ -58,3 +64,28 @@ export function Navbar() {
     </nav>
   );
 }
+
+const BurgerMenu = () => {
+  const user = useUser();
+
+  return (
+    <Sheet>
+      <SheetTrigger className="col-start-3 mr-7 place-self-end self-center text-3xl text-zinc-500 md:text-[1.75rem]">
+        <CgMenuRight />
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          {user && <SheetTitle>Logged in as {user.name}</SheetTitle>}
+          <SheetDescription>
+            Social Media application, built with modern technologies.
+          </SheetDescription>
+        </SheetHeader>
+        <Link href={user ? "/api/auth/signout" : "/api/auth/signin"}>
+          <Button className="mt-5 w-full">
+            {user ? "Sign out" : "Sign in"}
+          </Button>
+        </Link>
+      </SheetContent>
+    </Sheet>
+  );
+};
