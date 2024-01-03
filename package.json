@@ -29,6 +29,7 @@
     "clsx": "^2.0.0",
     "date-fns": "^3.0.6",
     "drizzle-orm": "^0.28.5",
+    "geist": "^1.2.0",
     "lucide-react": "^0.302.0",
     "nanoid": "^5.0.4",
     "next": "^14.0.3",
