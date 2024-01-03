@@ -26,6 +26,7 @@ import { Button } from "./ui/button";
 
 export function Navbar() {
   const { toggleCreatePostIsOpen } = usePostModalActions();
+  const user = useUser();
 
   return (
     <nav>
@@ -57,9 +58,9 @@ export function Navbar() {
           <PiHeartBold />
         </button>
 
-        <button type="button">
+        <Link href={user ? `/user/${user.id}` : ""}>
           <BiUser />
-        </button>
+        </Link>
       </div>
     </nav>
   );
