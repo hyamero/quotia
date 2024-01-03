@@ -28,7 +28,10 @@ export function Posts({ session, allPosts }: PostsProps) {
 
       {session && tempPosts.length !== 0
         ? tempPosts.map((post) => {
-            return <PostItem key={post.id} post={post} />;
+            /**
+             * TODO: Fix this type casting.
+             */
+            return <PostItem key={post.id} post={post as Post} />;
           })
         : null}
 

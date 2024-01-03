@@ -7,6 +7,12 @@ type PostItem = {
   content: string | null;
   createdAt: Date;
   updatedAt: Date | null;
+  likes: number;
+  likedByUser: boolean;
+};
+
+type TempPostItem = Omit<PostItem, "likes" | "likedByUser"> & {
+  author: User;
 };
 
 type User = {
@@ -26,8 +32,8 @@ export type Post = PostItem & {
  */
 
 type TempPostStore = {
-  tempPosts: Post[];
-  setTempPosts: (newPost: Post | undefined) => void;
+  tempPosts: TempPostItem[];
+  setTempPosts: (newPost: TempPostItem | undefined) => void;
 };
 
 export const useTempPostStore = create<TempPostStore>()((set) => ({
