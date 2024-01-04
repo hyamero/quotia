@@ -86,30 +86,38 @@ export const useSetSession = () => useSessionStore((state) => state.setSession);
  * CreatePostModal (for opening and closing the create post modal)
  */
 
-type CreatePostModalStore = {
-  createPostIsOpen: boolean;
+type ModalStore = {
+  postFormIsOpen: boolean;
+  loginModalIsOpen: boolean;
 
   actions: {
-    setCreatePostIsOpen: (modalState: boolean) => void;
-    toggleCreatePostIsOpen: () => void;
+    setPostFormIsOpen: (modalState: boolean) => void;
+    togglePostFormIsOpen: () => void;
+    toggleLoginModalIsOpen: () => void;
   };
 };
 
-const useCreatePostModalStore = create<CreatePostModalStore>()((set) => ({
-  createPostIsOpen: false,
+const useModalStore = create<ModalStore>()((set) => ({
+  postFormIsOpen: false,
+  loginModalIsOpen: false,
 
   actions: {
-    setCreatePostIsOpen: (modalState) =>
+    setPostFormIsOpen: (modalState) =>
       set(() => ({
-        createPostIsOpen: modalState,
+        postFormIsOpen: modalState,
       })),
-    toggleCreatePostIsOpen: () =>
-      set((state) => ({ createPostIsOpen: !state.createPostIsOpen })),
+    togglePostFormIsOpen: () =>
+      set((state) => ({ postFormIsOpen: !state.postFormIsOpen })),
+
+    toggleLoginModalIsOpen: () =>
+      set((state) => ({ loginModalIsOpen: !state.loginModalIsOpen })),
   },
 }));
 
-export const usePostModalState = () =>
-  useCreatePostModalStore((state) => state.createPostIsOpen);
+export const usePostFormModal = () =>
+  useModalStore((state) => state.postFormIsOpen);
 
-export const usePostModalActions = () =>
-  useCreatePostModalStore((state) => state.actions);
+export const useLoginModal = () =>
+  useModalStore((state) => state.loginModalIsOpen);
+
+export const useModalActions = () => useModalStore((state) => state.actions);
