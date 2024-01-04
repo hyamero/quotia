@@ -1,12 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
 import { type Session } from "next-auth";
 
-import { type Post, useTempPosts, useSetSession } from "~/lib/useStore";
+import {
+  type Post,
+  type User,
+  useTempPosts,
+  useSetSession,
+} from "~/lib/useStore";
 
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
-import { useEffect } from "react";
 
 type PostsProps = {
   session?: Session | null;
@@ -28,15 +33,24 @@ export function Posts({ session, allPosts }: PostsProps) {
 
       {session && tempPosts.length !== 0
         ? tempPosts.map((post) => {
-            /**
-             * TODO: Fix this type casting.
-             */
-            return <PostItem key={post.id} post={post as Post} />;
+            return (
+              <PostItem
+                key={post.id}
+                post={{
+                  ...post,
+                  authorId: session.user.id,
+                  author: session.user as User,
+                }}
+              />
+            );
           })
         : null}
 
       {allPosts?.length !== 0 ? (
         allPosts?.map((post) => {
+          if (tempPosts.map((tempPost) => tempPost.id).includes(post.id))
+            return null;
+
           return <PostItem key={post.id} post={post} />;
         })
       ) : (
