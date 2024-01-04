@@ -7,7 +7,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { likes, posts } from "~/server/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
@@ -19,14 +19,20 @@ export const postRouter = createTRPCRouter({
         id: nanoid(),
       });
 
-      return ctx.db.query.posts.findFirst({
-        where: (posts, { eq }) => eq(posts.authorId, ctx.session.user.id),
-        orderBy: (posts, { desc }) => [desc(posts.createdAt)],
+      const data = await ctx.db
+        .select({
+          id: posts.id,
+          authorId: posts.authorId,
+          content: posts.content,
+          createdAt: posts.createdAt,
+        })
+        .from(posts)
+        .where(eq(posts.authorId, ctx.session.user.id))
+        .orderBy(desc(posts.createdAt))
+        .limit(1)
+        .execute();
 
-        with: {
-          author: true,
-        },
-      });
+      return data[0];
     }),
 
   getAll: publicProcedure.query(async ({ ctx }) => {

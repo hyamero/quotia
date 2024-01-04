@@ -11,11 +11,12 @@ type PostItem = {
   likedByUser: boolean;
 };
 
-type TempPostItem = Omit<PostItem, "likes" | "likedByUser"> & {
-  author: User;
-};
+export type TempPostItem = Omit<
+  PostItem,
+  "likes" | "likedByUser" | "updatedAt"
+>;
 
-type User = {
+export type User = {
   id: string;
   name: string | null;
   email: string;
@@ -32,7 +33,7 @@ export type Post = PostItem & {
  */
 
 type TempPostStore = {
-  tempPosts: TempPostItem[];
+  tempPosts: PostItem[];
   setTempPosts: (newPost: TempPostItem | undefined) => void;
 };
 
@@ -42,7 +43,10 @@ export const useTempPostStore = create<TempPostStore>()((set) => ({
   setTempPosts: (newPost) =>
     newPost &&
     set((state) => ({
-      tempPosts: [newPost, ...state.tempPosts],
+      tempPosts: [
+        { ...newPost, likes: 0, likedByUser: false, updatedAt: null },
+        ...state.tempPosts,
+      ],
     })),
 }));
 

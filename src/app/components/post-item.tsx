@@ -1,6 +1,9 @@
+import { toast } from "sonner";
+import { useState } from "react";
+import { api } from "~/trpc/react";
 import { type Post, useUser } from "~/lib/useStore";
-import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
 import { formatDistance } from "~/hooks/format-distance";
+import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
 import { PostDropdownMenu } from "./post-dropdown-menu";
@@ -17,12 +20,10 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "~/app/components/ui/tooltip";
-import { api } from "~/trpc/react";
-import { toast } from "sonner";
-import { useState } from "react";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
+
   const isAuthor = user?.id === post.authorId;
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
@@ -48,7 +49,6 @@ export function PostItem({ post }: { post: Post }) {
     } else {
       setLikeCount(likeCount + 1);
     }
-
     toggleLike.mutate({ postId: post.id });
   };
 
@@ -60,7 +60,9 @@ export function PostItem({ post }: { post: Post }) {
             className="rounded-full"
             src={post.author.image as string | undefined}
           />
-          <AvatarFallback>{post.author.name?.split(" ").at(0)}</AvatarFallback>
+          <AvatarFallback className="text-xs">
+            {post.author.name?.split(" ").at(0)}
+          </AvatarFallback>
         </Avatar>
 
         <div className="w-full">
