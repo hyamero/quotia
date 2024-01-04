@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { Navbar } from "./components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/components/ui/sonner";
+import { LoginModal } from "./components/modals/login-modal";
 
 export const metadata = {
   title: "Quotia",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <TRPCReactProvider cookies={cookies().toString()}>
           <Toaster />
           <Navbar />
+          <LoginModal />
           {children}
         </TRPCReactProvider>
       </body>
