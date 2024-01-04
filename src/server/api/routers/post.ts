@@ -67,8 +67,6 @@ export const postRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           postId: input.postId,
         });
-
-        return { addedLike: true };
       } else {
         await ctx.db
           .delete(likes)
@@ -78,8 +76,6 @@ export const postRouter = createTRPCRouter({
               eq(likes.userId, ctx.session.user.id),
             ),
           );
-
-        return { addedLike: false };
       }
     }),
 });
