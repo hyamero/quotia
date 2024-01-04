@@ -1,5 +1,5 @@
 import { type Post, useUser } from "~/lib/useStore";
-import { PiChatCircle, PiHeart } from "react-icons/pi";
+import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
 import { formatDistance } from "~/hooks/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
@@ -17,10 +17,40 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "~/app/components/ui/tooltip";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
   const isAuthor = user?.id === post.authorId;
+
+  const [likedByUser, setLikedByUser] = useState(post.likedByUser);
+  const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
+
+  const toggleLike = api.post.toggleLike.useMutation({
+    onError: () => {
+      toast.error("Something went wrong. Please try again.");
+      setLikedByUser(!likedByUser);
+    },
+  });
+
+  const handleToggleLikeCount = () => {
+    if (!user) {
+      toast.error("You must be logged in to like a post.");
+      return;
+    }
+
+    setLikedByUser(!likedByUser);
+
+    if (likedByUser) {
+      setLikeCount(likeCount - 1);
+    } else {
+      setLikeCount(likeCount + 1);
+    }
+
+    toggleLike.mutate({ postId: post.id });
+  };
 
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
@@ -68,8 +98,15 @@ export function PostItem({ post }: { post: Post }) {
             <button
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+              onClick={() => {
+                handleToggleLikeCount();
+              }}
             >
-              <PiHeart className="text-2xl" />
+              {likedByUser ? (
+                <PiHeartFill className="transform text-2xl text-red-500 transition-transform active:scale-90" />
+              ) : (
+                <PiHeart className="transform text-2xl transition-transform active:scale-90" />
+              )}
             </button>
 
             <button
@@ -79,6 +116,7 @@ export function PostItem({ post }: { post: Post }) {
               <PiChatCircle className="text-2xl" />
             </button>
           </div>
+          <span className="text-zinc-500">{likeCount} likes</span>
         </div>
       </div>
     </div>

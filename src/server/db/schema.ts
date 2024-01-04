@@ -17,18 +17,48 @@ import { type AdapterAccount } from "next-auth/adapters";
 
 export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 
-export const posts = mysqlTable("post", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  authorId: varchar("authorId", { length: 255 }).notNull(),
-  content: varchar("content", { length: 256 }),
-  createdAt: timestamp("created_at")
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  updatedAt: timestamp("updatedAt").onUpdateNow(),
-});
+export const posts = mysqlTable(
+  "post",
+  {
+    id: varchar("id", { length: 255 })
+      .notNull()
+      .primaryKey()
+      .references(() => likes.postId),
+    authorId: varchar("authorId", { length: 255 }).notNull().unique(),
+    content: varchar("content", { length: 500 }),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+  },
+  (post) => ({
+    authorIdIdx: index("authorId_idx").on(post.authorId),
+  }),
+);
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
+  likes: many(likes),
+}));
+
+export const likes = mysqlTable(
+  "like",
+  {
+    userId: varchar("userId", { length: 255 }).notNull().unique(),
+    postId: varchar("postId", { length: 255 }).notNull().unique(),
+  },
+  (like) => {
+    return {
+      compoundKey: primaryKey(like.userId, like.postId),
+      userIdIdx: index("userId_idx").on(like.userId),
+      postIdIdx: index("postId_idx").on(like.postId),
+    };
+  },
+);
+
+export const likesRelations = relations(likes, ({ one }) => ({
+  user: one(users, { fields: [likes.userId], references: [users.id] }),
+  post: one(posts, { fields: [likes.postId], references: [posts.id] }),
 }));
 
 export const users = mysqlTable("user", {
@@ -45,6 +75,8 @@ export const users = mysqlTable("user", {
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  posts: many(posts),
+  likes: many(likes),
 }));
 
 export const accounts = mysqlTable(

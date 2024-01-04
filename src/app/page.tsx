@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center text-white">
-      <Posts session={session} allPosts={allPosts} />
+      <Posts session={session} allPosts={allPosts.posts} />
     </main>
   );
 }
