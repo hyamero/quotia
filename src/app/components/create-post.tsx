@@ -16,8 +16,8 @@ import useMediaQuery from "~/hooks/use-media-query";
 import {
   useUser,
   useSetTempPosts,
-  usePostModalState,
-  usePostModalActions,
+  usePostFormModal,
+  useModalActions,
 } from "~/lib/useStore";
 
 import { Button } from "./ui/button";
@@ -34,15 +34,15 @@ export function CreatePost() {
   const user = useUser();
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { setCreatePostIsOpen } = usePostModalActions();
-  const createPostIsOpen = usePostModalState();
+  const { setPostFormIsOpen } = useModalActions();
+  const postFormIsOpen = usePostFormModal();
 
   if (!user) return <CreatePostTrigger />;
 
   if (isDesktop) {
     return (
-      <Dialog open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-        {isDesktop && <CreatePostTrigger user={user} />}
+      <Dialog open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
+        <CreatePostTrigger user={user} />
         <DialogContent>
           {/* Form Component */}
           <CreatePostForm user={user} />
@@ -52,8 +52,8 @@ export function CreatePost() {
   }
 
   return (
-    <Drawer open={createPostIsOpen} onOpenChange={setCreatePostIsOpen}>
-      {isDesktop && <CreatePostTrigger user={user} />}
+    <Drawer open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
+      <CreatePostTrigger user={user} />
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
         <CreatePostForm user={user} />
@@ -63,7 +63,7 @@ export function CreatePost() {
 }
 
 const CreatePostForm = ({ user }: { user: Session["user"] }) => {
-  const { toggleCreatePostIsOpen } = usePostModalActions();
+  const { togglePostFormIsOpen } = useModalActions();
   const [inputValue, setInputValue] = useState("");
   const setTempPosts = useSetTempPosts();
 
@@ -107,7 +107,7 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
 
     if (inputValue.trim() === "") return;
     createPost.mutate({ content: inputValue });
-    toggleCreatePostIsOpen();
+    togglePostFormIsOpen();
   };
 
   return (
@@ -152,10 +152,10 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
 };
 
 const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
-  const { toggleCreatePostIsOpen } = usePostModalActions();
+  const { togglePostFormIsOpen, toggleLoginModalIsOpen } = useModalActions();
 
   return (
-    <div className="flex items-center gap-4 py-5">
+    <div className="hidden items-center gap-4 py-5 md:flex">
       <Avatar className="pointer-events-none">
         <AvatarImage
           className="rounded-full"
@@ -165,8 +165,13 @@ const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
       </Avatar>
 
       <button
-        onClick={toggleCreatePostIsOpen}
-        disabled={!user}
+        onClick={() => {
+          if (user) {
+            togglePostFormIsOpen();
+          } else {
+            toggleLoginModalIsOpen();
+          }
+        }}
         className="w-full cursor-text select-none text-left text-zinc-500"
       >
         Start a quote...

@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "~/app/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
@@ -36,9 +37,18 @@ export function PostItem({ post }: { post: Post }) {
     },
   });
 
+  const router = useRouter();
+
   const handleToggleLikeCount = () => {
     if (!user) {
-      toast.error("You must be logged in to like a post.");
+      toast("Not logged in?", {
+        description: "You must be logged in to like a post.",
+        action: {
+          label: "Sign In",
+          onClick: () => router.push("/api/auth/signin"),
+        },
+      });
+
       return;
     }
 
@@ -118,7 +128,7 @@ export function PostItem({ post }: { post: Post }) {
               <PiChatCircle className="text-2xl" />
             </button>
           </div>
-          <span className="text-zinc-500">{likeCount} likes</span>
+          <span className="text-zinc-500">{likeCount} likes </span>
         </div>
       </div>
     </div>

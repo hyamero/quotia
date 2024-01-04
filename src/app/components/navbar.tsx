@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePostModalActions, useUser } from "~/lib/useStore";
+import { useModalActions, useUser } from "~/lib/useStore";
 
 import {
   PiHouseFill,
@@ -23,10 +23,15 @@ import {
   SheetTrigger,
 } from "~/app/components/ui/sheet";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
-  const { toggleCreatePostIsOpen } = usePostModalActions();
+  const { togglePostFormIsOpen } = useModalActions();
   const user = useUser();
+
+  const router = useRouter();
+
+  const { toggleLoginModalIsOpen } = useModalActions();
 
   return (
     <nav>
@@ -50,7 +55,16 @@ export function Navbar() {
           <PiMagnifyingGlassBold />
         </button>
 
-        <button onClick={toggleCreatePostIsOpen} type="button">
+        <button
+          onClick={() => {
+            if (user) {
+              togglePostFormIsOpen();
+            } else {
+              toggleLoginModalIsOpen();
+            }
+          }}
+          type="button"
+        >
           <PiQuotesFill />
         </button>
 
@@ -58,9 +72,17 @@ export function Navbar() {
           <PiHeartBold />
         </button>
 
-        <Link href={user ? `/user/${user.id}` : ""}>
+        <button
+          onClick={() => {
+            if (!user) {
+              toggleLoginModalIsOpen();
+            } else {
+              router.push(`/user/${user.id}`);
+            }
+          }}
+        >
           <BiUser />
-        </Link>
+        </button>
       </div>
     </nav>
   );
