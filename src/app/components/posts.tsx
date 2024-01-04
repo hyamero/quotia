@@ -37,6 +37,9 @@ export function Posts({ session, allPosts }: PostsProps) {
 
       {allPosts?.length !== 0 ? (
         allPosts?.map((post) => {
+          if (tempPosts.map((tempPost) => tempPost.id).includes(post.id))
+            return null;
+
           return <PostItem key={post.id} post={post} />;
         })
       ) : (
