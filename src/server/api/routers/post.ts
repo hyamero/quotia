@@ -35,6 +35,12 @@ export const postRouter = createTRPCRouter({
       return data[0];
     }),
 
+  delete: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(posts).where(eq(posts.id, input.postId));
+    }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.query.posts.findMany({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],

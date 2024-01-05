@@ -34,26 +34,40 @@ export type Post = PostItem & {
 
 type TempPostStore = {
   tempPosts: PostItem[];
-  setTempPosts: (newPost: TempPostItem | undefined) => void;
+  deletedPosts: string[];
+
+  actions: {
+    setTempPosts: (newPost: TempPostItem | undefined) => void;
+    setDeletedPosts: (postId: string) => void;
+  };
 };
 
 export const useTempPostStore = create<TempPostStore>()((set) => ({
   tempPosts: [],
+  deletedPosts: [],
 
-  setTempPosts: (newPost) =>
-    newPost &&
-    set((state) => ({
-      tempPosts: [
-        { ...newPost, likes: 0, likedByUser: false, updatedAt: null },
-        ...state.tempPosts,
-      ],
-    })),
+  actions: {
+    setTempPosts: (newPost) =>
+      newPost &&
+      set((state) => ({
+        tempPosts: [
+          { ...newPost, likes: 0, likedByUser: false, updatedAt: null },
+          ...state.tempPosts,
+        ],
+      })),
+    setDeletedPosts: (postId) =>
+      set((state) => ({
+        deletedPosts: [...state.deletedPosts, postId],
+      })),
+  },
 }));
 
 export const useTempPosts = () => useTempPostStore((state) => state.tempPosts);
 
-export const useSetTempPosts = () =>
-  useTempPostStore((state) => state.setTempPosts);
+export const useDeletedPosts = () =>
+  useTempPostStore((state) => state.deletedPosts);
+
+export const usePostActions = () => useTempPostStore((state) => state.actions);
 
 /**
  * Store session data for client-side use
