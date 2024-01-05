@@ -9,7 +9,6 @@ import {
   DialogTitle,
 } from "~/app/components/ui/dialog";
 import { Button } from "./ui/button";
-import Link from "next/link";
 
 type ModalProps = {
   modalState: boolean;
@@ -19,6 +18,16 @@ type ModalProps = {
   description: string;
   confirmButton: string;
   cancelButton?: string;
+  confirmAction?: () => void;
+  buttonVariant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
+    | null
+    | undefined;
 };
 
 export function Modal({
@@ -29,6 +38,8 @@ export function Modal({
   description,
   cancelButton,
   confirmButton,
+  confirmAction,
+  buttonVariant,
 }: ModalProps) {
   return (
     <Dialog open={modalState} onOpenChange={modalAction}>
@@ -39,10 +50,16 @@ export function Modal({
         </DialogHeader>
         <DialogFooter>
           <Button onClick={() => modalAction()} variant="outline">
-            {cancelButton}
+            {cancelButton ? cancelButton : "Cancel"}
           </Button>
-          <Button onClick={() => modalAction()}>
-            <Link href="/api/auth/signin">{confirmButton}</Link>
+          <Button
+            onClick={() => {
+              modalAction();
+              if (confirmAction) confirmAction();
+            }}
+            variant={buttonVariant}
+          >
+            {confirmButton}
           </Button>
         </DialogFooter>
       </DialogContent>
