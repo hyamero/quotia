@@ -35,16 +35,19 @@ export type Post = PostItem & {
 type TempPostStore = {
   tempPosts: PostItem[];
   deletedPosts: string[];
+  deletePostId: string;
 
   actions: {
     setTempPosts: (newPost: TempPostItem | undefined) => void;
     setDeletedPosts: (postId: string) => void;
+    setDeletePostId: (postId: string) => void;
   };
 };
 
 export const useTempPostStore = create<TempPostStore>()((set) => ({
   tempPosts: [],
   deletedPosts: [],
+  deletePostId: "",
 
   actions: {
     setTempPosts: (newPost) =>
@@ -59,6 +62,11 @@ export const useTempPostStore = create<TempPostStore>()((set) => ({
       set((state) => ({
         deletedPosts: [...state.deletedPosts, postId],
       })),
+
+    setDeletePostId: (postId) =>
+      set(() => ({
+        deletePostId: postId,
+      })),
   },
 }));
 
@@ -66,6 +74,9 @@ export const useTempPosts = () => useTempPostStore((state) => state.tempPosts);
 
 export const useDeletedPosts = () =>
   useTempPostStore((state) => state.deletedPosts);
+
+export const useDeletePostId = () =>
+  useTempPostStore((state) => state.deletePostId);
 
 export const usePostActions = () => useTempPostStore((state) => state.actions);
 
@@ -97,23 +108,26 @@ export const useUser = () => useSessionStore((state) => state.user);
 export const useSetSession = () => useSessionStore((state) => state.setSession);
 
 /**
- * CreatePostModal (for opening and closing the create post modal)
+ * MODAL STORE
  */
 
 type ModalStore = {
   postFormIsOpen: boolean;
   loginModalIsOpen: boolean;
+  deletePostModalIsOpen: boolean;
 
   actions: {
     setPostFormIsOpen: (modalState: boolean) => void;
     togglePostFormIsOpen: () => void;
     toggleLoginModalIsOpen: () => void;
+    toggleDeletePostModalIsOpen: () => void;
   };
 };
 
 const useModalStore = create<ModalStore>()((set) => ({
   postFormIsOpen: false,
   loginModalIsOpen: false,
+  deletePostModalIsOpen: false,
 
   actions: {
     setPostFormIsOpen: (modalState) =>
@@ -125,6 +139,9 @@ const useModalStore = create<ModalStore>()((set) => ({
 
     toggleLoginModalIsOpen: () =>
       set((state) => ({ loginModalIsOpen: !state.loginModalIsOpen })),
+
+    toggleDeletePostModalIsOpen: () =>
+      set((state) => ({ deletePostModalIsOpen: !state.deletePostModalIsOpen })),
   },
 }));
 
@@ -133,5 +150,8 @@ export const usePostFormModal = () =>
 
 export const useLoginModal = () =>
   useModalStore((state) => state.loginModalIsOpen);
+
+export const useDeletePostModal = () =>
+  useModalStore((state) => state.deletePostModalIsOpen);
 
 export const useModalActions = () => useModalStore((state) => state.actions);
