@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { type Post, useUser } from "~/lib/useStore";
 import { formatDistance } from "~/hooks/format-distance";
@@ -28,6 +28,9 @@ export function PostItem({ post }: { post: Post }) {
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
   const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
+  const [likes, setLikes] = useState(
+    likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes",
+  );
 
   const toggleLike = api.post.toggleLike.useMutation({
     onError: () => {
@@ -50,14 +53,14 @@ export function PostItem({ post }: { post: Post }) {
     }
 
     setLikedByUser(!likedByUser);
+    setLikeCount(likedByUser ? likeCount - 1 : likeCount + 1);
 
-    if (likedByUser) {
-      setLikeCount(likeCount - 1);
-    } else {
-      setLikeCount(likeCount + 1);
-    }
     toggleLike.mutate({ postId: post.id });
   };
+
+  useEffect(() => {
+    setLikes(likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes");
+  }, [likeCount]);
 
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
@@ -125,7 +128,10 @@ export function PostItem({ post }: { post: Post }) {
               <PiChatCircle className="text-2xl" />
             </button>
           </div>
-          <span className="text-zinc-500">{likeCount} likes </span>
+
+          <span className="text-zinc-500">
+            {(likeCount ? likeCount : "") + " " + likes}
+          </span>
         </div>
       </div>
     </div>
