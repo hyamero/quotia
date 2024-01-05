@@ -13,6 +13,7 @@ import {
 
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
+import { DeletePostModal } from "./modals";
 
 type PostsProps = {
   session?: Session | null;
@@ -40,6 +41,7 @@ export function Posts({ session, allPosts }: PostsProps) {
   return (
     <div className="mt-24 w-full max-w-lg xl:max-w-xl">
       <CreatePost />
+      <DeletePostModal />
 
       {session && tempPosts.length !== 0
         ? tempPosts

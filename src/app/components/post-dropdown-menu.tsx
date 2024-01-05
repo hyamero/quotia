@@ -1,9 +1,8 @@
 "use client";
 
 import { toast } from "sonner";
-import { api } from "~/trpc/react";
 import { PiDotsThree } from "react-icons/pi";
-import { usePostActions, useUser } from "~/lib/useStore";
+import { useModalActions, usePostActions, useUser } from "~/lib/useStore";
 
 import {
   DropdownMenu,
@@ -24,20 +23,12 @@ export function PostDropdownMenu({
 }: PostDropdownMenuProps) {
   const user = useUser();
   const isAuthor = user?.id === postAuthor;
-  const { setDeletedPosts } = usePostActions();
-
-  const deletePost = api.post.delete.useMutation({
-    onSettled: () => {
-      toast.info("Post Deleted.");
-    },
-    onError: () => {
-      toast.error("Something went wrong. Please try again.");
-    },
-  });
+  const { setDeletePostId } = usePostActions();
+  const { toggleDeletePostModalIsOpen } = useModalActions();
 
   const handleDeletePost = () => {
-    deletePost.mutate({ postId });
-    setDeletedPosts(postId);
+    setDeletePostId(postId);
+    toggleDeletePostModalIsOpen();
   };
 
   return (
