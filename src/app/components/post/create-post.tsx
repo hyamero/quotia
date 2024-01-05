@@ -20,8 +20,8 @@ import {
   useModalActions,
 } from "~/lib/useStore";
 
-import { Button } from "./ui/button";
-import { Drawer, DrawerContent } from "./ui/drawer";
+import { Button } from "../ui/button";
+import { Drawer, DrawerContent } from "../ui/drawer";
 import { Dialog, DialogContent } from "~/app/components/ui/dialog";
 
 import {

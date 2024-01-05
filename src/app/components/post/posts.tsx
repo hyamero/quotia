@@ -13,7 +13,7 @@ import {
 
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
-import { DeletePostModal } from "./modals";
+import { DeletePostModal } from "../modals";
 
 type PostsProps = {
   session?: Session | null;

@@ -1,5 +1,5 @@
 import { api } from "~/trpc/server";
-import { Posts } from "./components/posts";
+import { Posts } from "./components/post/posts";
 import { getServerAuthSession } from "~/server/auth";
 
 export default async function Home() {
