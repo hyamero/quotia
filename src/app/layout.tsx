@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { Navbar } from "./components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/components/ui/sonner";
-import { LoginModal } from "./components/modals/login-modal";
+import { LoginModal } from "./components/modals";
 
 export const metadata = {
   title: "Quotia",
