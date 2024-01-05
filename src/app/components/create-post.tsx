@@ -15,7 +15,7 @@ import useMediaQuery from "~/hooks/use-media-query";
 
 import {
   useUser,
-  useSetTempPosts,
+  usePostActions,
   usePostFormModal,
   useModalActions,
 } from "~/lib/useStore";
@@ -65,7 +65,7 @@ export function CreatePost() {
 const CreatePostForm = ({ user }: { user: Session["user"] }) => {
   const { togglePostFormIsOpen } = useModalActions();
   const [inputValue, setInputValue] = useState("");
-  const setTempPosts = useSetTempPosts();
+  const { setTempPosts } = usePostActions();
 
   // Dynamic Textarea Height
 

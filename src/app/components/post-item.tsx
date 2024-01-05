@@ -24,8 +24,7 @@ import { useRouter } from "next/navigation";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
-
-  const isAuthor = user?.id === post.authorId;
+  const router = useRouter();
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
   const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
@@ -36,8 +35,6 @@ export function PostItem({ post }: { post: Post }) {
       setLikedByUser(!likedByUser);
     },
   });
-
-  const router = useRouter();
 
   const handleToggleLikeCount = () => {
     if (!user) {
@@ -100,7 +97,7 @@ export function PostItem({ post }: { post: Post }) {
               {/* 
                DropDownMenu
               */}
-              <PostDropdownMenu isAuthor={isAuthor} />
+              <PostDropdownMenu postId={post.id} postAuthor={post.authorId} />
             </div>
           </div>
 
