@@ -120,6 +120,7 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
           <AvatarImage
             className="rounded-full"
             src={user.image as string | undefined}
+            alt={user.name ? `${user.name}'s avatar` : "user avatar"}
           />
           <AvatarFallback>{user.name}</AvatarFallback>
         </Avatar>

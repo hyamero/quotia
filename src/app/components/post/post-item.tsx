@@ -69,6 +69,7 @@ export function PostItem({ post }: { post: Post }) {
           <AvatarImage
             className="rounded-full"
             src={post.author.image as string | undefined}
+            alt={`${post.author.name}'s avatar`}
           />
           <AvatarFallback className="text-xs">
             {post.author.name?.split(" ").at(0)}
@@ -108,6 +109,7 @@ export function PostItem({ post }: { post: Post }) {
 
           <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
             <button
+              title="like"
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
               onClick={() => {
@@ -122,6 +124,7 @@ export function PostItem({ post }: { post: Post }) {
             </button>
 
             <button
+              title="comment"
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
             >

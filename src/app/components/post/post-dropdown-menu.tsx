@@ -35,7 +35,7 @@ export function PostDropdownMenu({
     <>
       {isAuthor ? (
         <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none">
+          <DropdownMenuTrigger title="post menu" className="outline-none">
             <PiDotsThree className="text-2xl" />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="font-semibold [&>*]:cursor-pointer">
