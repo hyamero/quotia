@@ -16,7 +16,7 @@ import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
 import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
-import Loading, { LoadingSkeleton } from "~/app/loading";
+import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 import { nanoid } from "nanoid";
 
 type PostsProps = {
