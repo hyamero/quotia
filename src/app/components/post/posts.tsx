@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { type Session } from "next-auth";
+import { toast } from "sonner";
 
 import {
   type User,
@@ -15,23 +16,31 @@ import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
 import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
-import React from "react";
-import Loading from "~/app/loading";
+import Loading, { LoadingSkeleton } from "~/app/loading";
+import { nanoid } from "nanoid";
 
 type PostsProps = {
   session?: Session | null;
 };
 
 export function Posts({ session }: PostsProps) {
+  const tempPosts = useTempPosts();
+  const setSession = useSetSession();
   const { ref, inView } = useInView();
+  const deletedPosts = useDeletedPosts();
+
+  useEffect(() => {
+    if (session) setSession(session.user);
+    else setSession(null);
+  }, [session]);
 
   const {
     data: posts,
     isLoading,
-    // isFetchingNextPage,
+    isError,
+    error,
     fetchNextPage,
-    // isError,
-    // error,
+    isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
     {},
     {
@@ -39,14 +48,17 @@ export function Posts({ session }: PostsProps) {
     },
   );
 
-  const tempPosts = useTempPosts();
-  const setSession = useSetSession();
-  const deletedPosts = useDeletedPosts();
-
+  /**
+   * Fetch next page when the user scrolls to the bottom of the page.
+   */
   useEffect(() => {
-    if (session) setSession(session.user);
-    else setSession(null);
-  }, [session]);
+    if (inView) {
+      fetchNextPage().catch((err) => console.log(err));
+    }
+  }, [fetchNextPage, inView]);
+
+  if (isLoading) return <Loading />;
+  if (isError) toast.error(error.message);
 
   const existsInTempPosts = (postId: string) => {
     const tempPostId = tempPosts.find((post) => post.id === postId);
@@ -55,16 +67,8 @@ export function Posts({ session }: PostsProps) {
     else return false;
   };
 
-  useEffect(() => {
-    if (inView) {
-      fetchNextPage().catch((err) => console.log(err));
-    }
-  }, [fetchNextPage, inView]);
-
-  if (isLoading) return <Loading />;
-
   return (
-    <div className="mt-24 w-full max-w-lg xl:max-w-xl">
+    <div className="mt-24 w-full max-w-lg pb-24 md:pb-0 xl:max-w-xl">
       <CreatePost />
       <DeletePostModal />
 
@@ -86,7 +90,7 @@ export function Posts({ session }: PostsProps) {
         : null}
 
       {posts?.pages.map((page) => (
-        <React.Fragment key={page.nextPageCursor?.toDateString()}>
+        <React.Fragment key={nanoid()}>
           {page.posts
             .filter(
               (post) =>
@@ -98,7 +102,14 @@ export function Posts({ session }: PostsProps) {
         </React.Fragment>
       ))}
 
-      <div ref={ref} />
+      {/* Ref for react-intersection-observer */}
+      <div ref={ref} className="pt-2"></div>
+
+      {isFetchingNextPage && (
+        <div className="py-5">
+          <LoadingSkeleton />
+        </div>
+      )}
     </div>
   );
 }
