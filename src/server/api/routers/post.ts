@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { eq, and, desc, gt, is, lte } from "drizzle-orm";
+import { eq, and, desc, lte, ne } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -14,15 +14,23 @@ export const postRouter = createTRPCRouter({
   inifiniteFeed: publicProcedure
     .input(
       z.object({
-        limit: z.number().optional().default(7),
-        cursor: z.date().optional(),
+        limit: z.number().optional().default(10),
+        cursor: z
+          .object({
+            id: z.string(),
+            createdAt: z.date(),
+          })
+          .optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const data = await ctx.db.query.posts.findMany({
         orderBy: [desc(posts.createdAt)],
         limit: input.limit + 1,
-        where: lte(posts.createdAt, input.cursor ?? new Date()),
+        where: and(
+          lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+          ne(posts.id, input.cursor?.id ?? ""),
+        ),
         with: {
           author: true,
           likes: true,
@@ -32,10 +40,13 @@ export const postRouter = createTRPCRouter({
       let nextPageCursor: typeof input.cursor | undefined;
 
       if (data.length > input.limit) {
-        const nextItem = data[data.length - 1];
+        const pointerItem = data[data.length - 1];
 
-        if (nextItem !== null && nextItem !== undefined) {
-          nextPageCursor = nextItem.createdAt;
+        if (pointerItem !== null && pointerItem !== undefined) {
+          nextPageCursor = {
+            id: pointerItem.id,
+            createdAt: pointerItem.createdAt,
+          };
         }
       }
 
