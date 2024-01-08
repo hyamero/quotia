@@ -105,7 +105,7 @@ export function PostItem({ post }: { post: Post }) {
             </div>
           </div>
 
-          <p>{post.content}</p>
+          <p className="whitespace-pre-wrap">{post.content}</p>
 
           <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
             <button

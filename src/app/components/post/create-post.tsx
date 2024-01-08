@@ -67,6 +67,8 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
   const [inputValue, setInputValue] = useState("");
   const { setTempPosts } = usePostActions();
 
+  const [textAreaCount, setTextAreaCount] = useState(0);
+
   // Dynamic Textarea Height
 
   const textAreaRef = useRef<HTMLTextAreaElement>();
@@ -130,23 +132,38 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
             ref={inputRef}
             value={inputValue}
             style={{ height: 0 }}
-            maxLength={500}
+            // maxLength={500}
             placeholder="Start a quote..."
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setTextAreaCount(e.target.value.length);
+            }}
             className="max-h-[350px] w-full flex-grow resize-none overflow-auto bg-background pb-4 pr-4 outline-none placeholder:text-zinc-500"
           />
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-3">
-        <p className="cursor-pointer text-zinc-500">This is a button</p>
-        <Button
-          type="submit"
-          className="rounded-full font-semibold disabled:cursor-not-allowed disabled:text-zinc-500"
-          disabled={createPost.isLoading || inputValue.trim() === ""}
-        >
-          {createPost.isLoading ? "Posting..." : "Post"}
-        </Button>
+        <p className="cursor-pointer text-zinc-500">Your followers can reply</p>
+        <div className="space-x-3">
+          <span
+            className={textAreaCount > 500 ? "text-red-500" : "text-zinc-500"}
+          >
+            {textAreaCount >= 450 ? 500 - textAreaCount : null}
+          </span>
+          <Button
+            title="Post"
+            type="submit"
+            className="rounded-full font-semibold disabled:cursor-not-allowed disabled:text-zinc-500"
+            disabled={
+              createPost.isLoading ||
+              inputValue.trim() === "" ||
+              textAreaCount > 500
+            }
+          >
+            {createPost.isLoading ? "Posting..." : "Post"}
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -166,6 +183,8 @@ const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
       </Avatar>
 
       <button
+        title="Start a quote..."
+        className="w-full cursor-text select-none text-left text-zinc-500"
         onClick={() => {
           if (user) {
             togglePostFormIsOpen();
@@ -173,13 +192,13 @@ const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
             toggleLoginModalIsOpen();
           }
         }}
-        className="w-full cursor-text select-none text-left text-zinc-500"
       >
         Start a quote...
       </button>
 
       <Button
         disabled
+        title="Post"
         className="rounded-full font-semibold disabled:cursor-not-allowed disabled:text-zinc-500"
       >
         Post
