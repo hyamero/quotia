@@ -8,6 +8,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/components/ui/sonner";
 import { LoginModal } from "./components/modals";
 import { getServerAuthSession } from "~/server/auth";
+import { api } from "~/trpc/server";
 
 export const metadata = {
   title: "Quotia",
@@ -22,12 +23,16 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
+  const slug = await api.user.getUserSlug.query({
+    id: session?.user?.id ?? "",
+  });
+
   return (
     <html lang="en">
       <body className={`px-4 font-sans sm:px-10 ${GeistSans.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <Toaster />
-          <Navbar session={session} />
+          <Navbar session={session} slug={slug?.slug} />
           <LoginModal />
           <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">
             {children}

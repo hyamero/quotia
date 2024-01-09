@@ -31,26 +31,29 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import type { Session } from "next-auth";
 import { useEffect } from "react";
-import { api } from "~/trpc/react";
 
-export function Navbar({ session }: { session?: Session | null }) {
+export function Navbar({
+  session,
+  slug,
+}: {
+  session?: Session | null;
+  slug: string | null | undefined;
+}) {
   const setSession = useSetSession();
   const router = useRouter();
 
   const { togglePostFormIsOpen } = useModalActions();
   const { toggleLoginModalIsOpen } = useModalActions();
 
-  const { data: slug } = api.user.getUserSlug.useQuery({
-    id: session?.user?.id ?? "",
-  });
-
   useEffect(() => {
     if (session) {
       setSession({ ...session.user, slug: slug ?? null } as User);
     } else setSession(null);
-  }, [session]);
+  }, [session, slug]);
 
   const user = useUser();
+
+  const slugParam = user?.slug ? "@" + user.slug : "";
 
   return (
     <nav>
@@ -99,7 +102,7 @@ export function Navbar({ session }: { session?: Session | null }) {
             if (!session) {
               toggleLoginModalIsOpen();
             } else {
-              router.push(`/user/${user?.slug ?? session?.user.id}`);
+              router.push(`/user/${slugParam}`);
             }
           }}
         >
