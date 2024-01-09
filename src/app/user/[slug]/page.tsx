@@ -1,5 +1,6 @@
-import { api } from "~/trpc/server";
-import { getServerAuthSession } from "~/server/auth";
+"use client";
+
+import { api } from "~/trpc/react";
 import Link from "next/link";
 import {
   Avatar,
@@ -7,12 +8,36 @@ import {
   AvatarImage,
 } from "~/app/components/ui/avatar";
 import { Button } from "~/app/components/ui/button";
+import { useUser } from "~/lib/useStore";
+import Loading from "./loading";
+import { useEffect } from "react";
 
-export default async function Page({ params }: { params: { slug: string } }) {
-  const session = await getServerAuthSession();
-  const user = await api.user.getUser.query({ id: params.slug });
+export default function Page({ params }: { params: { slug: string } }) {
+  // const session = await getServerAuthSession();
 
-  const isCurrentUser = session?.user?.id === user?.id;
+  const currentUser = useUser();
+
+  const userId = params.slug.startsWith("%40")
+    ? params.slug.split("%40").at(1)
+    : params.slug;
+
+  const { data: user, isLoading } = api.user.getUser.useQuery({ id: userId! });
+
+  const isCurrentUser = currentUser?.id === user?.id;
+
+  useEffect(() => {
+    if (user?.slug) {
+      const newUrl = `@${user.slug}`;
+
+      window.history.replaceState(
+        { ...window.history.state, as: newUrl, url: newUrl },
+        "",
+        newUrl,
+      );
+    }
+  }, [user?.slug]);
+
+  if (isLoading) return <Loading />;
 
   if (!user) return <NoUser />;
 
