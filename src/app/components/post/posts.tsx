@@ -17,7 +17,6 @@ import { CreatePost } from "./create-post";
 import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
-import { nanoid } from "nanoid";
 
 type PostsProps = {
   session?: Session | null;
@@ -90,7 +89,7 @@ export function Posts({ session }: PostsProps) {
         : null}
 
       {posts?.pages.map((page) => (
-        <React.Fragment key={nanoid()}>
+        <React.Fragment key={page.nextPageCursor?.id}>
           {page.posts
             .filter(
               (post) =>
