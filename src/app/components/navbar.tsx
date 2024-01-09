@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useModalActions, useUser } from "~/lib/useStore";
+import {
+  type User,
+  useModalActions,
+  useSetSession,
+  useUser,
+} from "~/lib/useStore";
 
 import {
   PiHouseFill,
@@ -24,14 +29,28 @@ import {
 } from "~/app/components/ui/sheet";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import type { Session } from "next-auth";
+import { useEffect } from "react";
+import { api } from "~/trpc/react";
 
-export function Navbar() {
-  const { togglePostFormIsOpen } = useModalActions();
-  const user = useUser();
-
+export function Navbar({ session }: { session?: Session | null }) {
+  const setSession = useSetSession();
   const router = useRouter();
 
+  const { togglePostFormIsOpen } = useModalActions();
   const { toggleLoginModalIsOpen } = useModalActions();
+
+  const { data: slug } = api.user.getUserSlug.useQuery({
+    id: session?.user?.id ?? "",
+  });
+
+  useEffect(() => {
+    if (session) {
+      setSession({ ...session.user, slug: slug ?? null } as User);
+    } else setSession(null);
+  }, [session]);
+
+  const user = useUser();
 
   return (
     <nav>
@@ -77,10 +96,10 @@ export function Navbar() {
         <button
           title="profile"
           onClick={() => {
-            if (!user) {
+            if (!session) {
               toggleLoginModalIsOpen();
             } else {
-              router.push(`/user/${user.id}`);
+              router.push(`/user/${user?.slug ?? session?.user.id}`);
             }
           }}
         >

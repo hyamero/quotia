@@ -7,6 +7,7 @@ import { Navbar } from "./components/navbar";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "~/app/components/ui/sonner";
 import { LoginModal } from "./components/modals";
+import { getServerAuthSession } from "~/server/auth";
 
 export const metadata = {
   title: "Quotia",
@@ -14,19 +15,23 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerAuthSession();
+
   return (
     <html lang="en">
       <body className={`px-4 font-sans sm:px-10 ${GeistSans.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <Toaster />
-          <Navbar />
+          <Navbar session={session} />
           <LoginModal />
-          {children}
+          <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">
+            {children}
+          </div>
         </TRPCReactProvider>
       </body>
     </html>

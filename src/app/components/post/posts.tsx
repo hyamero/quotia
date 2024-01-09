@@ -4,12 +4,7 @@ import React, { useEffect } from "react";
 import { type Session } from "next-auth";
 import { toast } from "sonner";
 
-import {
-  type User,
-  useTempPosts,
-  useSetSession,
-  useDeletedPosts,
-} from "~/lib/useStore";
+import { type User, useTempPosts, useDeletedPosts } from "~/lib/useStore";
 
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
@@ -24,14 +19,8 @@ type PostsProps = {
 
 export function Posts({ session }: PostsProps) {
   const tempPosts = useTempPosts();
-  const setSession = useSetSession();
   const { ref, inView } = useInView();
   const deletedPosts = useDeletedPosts();
-
-  useEffect(() => {
-    if (session) setSession(session.user);
-    else setSession(null);
-  }, [session]);
 
   const {
     data: posts,
@@ -67,7 +56,7 @@ export function Posts({ session }: PostsProps) {
   };
 
   return (
-    <div className="mt-24 w-full max-w-lg pb-24 md:pb-0 xl:max-w-xl">
+    <div className="pb-24 md:pb-0">
       <CreatePost />
       <DeletePostModal />
 
