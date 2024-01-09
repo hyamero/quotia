@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import type { Session } from "next-auth";
 
 type PostItem = {
   id: string;
@@ -18,9 +17,9 @@ export type TempPostItem = Omit<
 
 export type User = {
   id: string;
+  slug: string | null;
   name: string | null;
   email: string;
-  emailVerified: Date | null;
   image: string | null;
 };
 
@@ -85,13 +84,14 @@ export const usePostActions = () => useTempPostStore((state) => state.actions);
  */
 
 type SessionStore = {
-  user: Session["user"] | null;
-  setSession: (newSession: Session["user"] | null) => void;
+  user: User | null;
+  setSession: (newSession: User | null) => void;
 };
 
 const useSessionStore = create<SessionStore>()((set) => ({
   user: {
     id: "",
+    slug: null,
     name: "",
     email: "",
     image: "",
