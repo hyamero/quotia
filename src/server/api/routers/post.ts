@@ -21,16 +21,25 @@ export const postRouter = createTRPCRouter({
             createdAt: z.date(),
           })
           .optional(),
+        author: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      const condition = input.author
+        ? and(
+            eq(posts.authorId, input.author),
+            lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+            ne(posts.id, input.cursor?.id ?? ""),
+          )
+        : and(
+            lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+            ne(posts.id, input.cursor?.id ?? ""),
+          );
+
       const data = await ctx.db.query.posts.findMany({
         orderBy: [desc(posts.createdAt)],
         limit: input.limit + 1,
-        where: and(
-          lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
-          ne(posts.id, input.cursor?.id ?? ""),
-        ),
+        where: condition,
         with: {
           author: true,
           likes: true,
@@ -94,11 +103,13 @@ export const postRouter = createTRPCRouter({
   toggleLike: protectedProcedure
     .input(z.object({ postId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const condition = and(
+        eq(likes.postId, input.postId),
+        eq(likes.userId, ctx.session.user.id),
+      );
+
       const existingLike = await ctx.db.query.likes.findFirst({
-        where: and(
-          eq(likes.postId, input.postId),
-          eq(likes.userId, ctx.session.user.id),
-        ),
+        where: condition,
       });
 
       if (existingLike == undefined || existingLike == null) {
@@ -107,14 +118,7 @@ export const postRouter = createTRPCRouter({
           postId: input.postId,
         });
       } else {
-        await ctx.db
-          .delete(likes)
-          .where(
-            and(
-              eq(likes.postId, input.postId),
-              eq(likes.userId, ctx.session.user.id),
-            ),
-          );
+        await ctx.db.delete(likes).where(condition);
       }
     }),
 });
