@@ -21,6 +21,7 @@ import {
   TooltipProvider,
 } from "~/app/components/ui/tooltip";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
@@ -62,23 +63,30 @@ export function PostItem({ post }: { post: Post }) {
     setLikes(likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes");
   }, [likeCount]);
 
+  const userSlug = post.author.slug ? "@" + post.author.slug : post.authorId;
+
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
       <div className="flex w-full items-start gap-3">
-        <Avatar className="relative top-1">
-          <AvatarImage
-            className="rounded-full"
-            src={post.author.image as string | undefined}
-            alt={`${post.author.name}'s avatar`}
-          />
-          <AvatarFallback className="text-xs">
-            {post.author.name?.split(" ").at(0)}
-          </AvatarFallback>
-        </Avatar>
+        <Link href={`/user/${userSlug}`} className="font-semibold">
+          <Avatar className="relative top-1">
+            <AvatarImage
+              className="rounded-full"
+              src={post.author.image as string | undefined}
+              alt={`${post.author.name}'s avatar`}
+            />
+            <AvatarFallback className="text-xs">
+              {post.author.name?.split(" ").at(0)}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
 
         <div className="w-full">
           <div className="flex justify-between">
-            <span className="font-semibold">{post.author.name}</span>
+            <Link href={`/user/${userSlug}`} className="font-semibold">
+              {post.author.name}
+            </Link>
+
             <div className="flex items-center gap-2">
               <TooltipProvider>
                 <Tooltip>
