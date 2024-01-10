@@ -11,7 +11,7 @@ import {
 
 import { type User, useUser } from "~/lib/useStore";
 import { Button } from "~/app/components/ui/button";
-import { UserFeed } from "./user-feed";
+import { Posts } from "../components/post/posts";
 
 export default function UserProfile({ user }: { user?: User }) {
   if (!user) {
@@ -69,7 +69,9 @@ export default function UserProfile({ user }: { user?: User }) {
         </Button>
       </section>
 
-      <UserFeed authorId={user.id} />
+      {/* User Feed with authorId param
+       to list user's posts */}
+      <Posts authorId={user.id} />
     </main>
   );
 }

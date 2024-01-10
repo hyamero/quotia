@@ -30,19 +30,21 @@ import {
   AvatarFallback,
 } from "~/app/components/ui/avatar";
 
-export function CreatePost() {
+export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
   const user = useUser();
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const { setPostFormIsOpen } = useModalActions();
   const postFormIsOpen = usePostFormModal();
 
-  if (!user) return <CreatePostTrigger />;
+  if (!user) {
+    return !onProfilePage && <CreatePostTrigger />;
+  }
 
   if (isDesktop) {
     return (
       <Dialog open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
-        <CreatePostTrigger user={user} />
+        {!onProfilePage && <CreatePostTrigger user={user} />}
         <DialogContent>
           {/* Form Component */}
           <CreatePostForm user={user} />
@@ -53,7 +55,7 @@ export function CreatePost() {
 
   return (
     <Drawer open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
-      <CreatePostTrigger user={user} />
+      {!onProfilePage && <CreatePostTrigger user={user} />}
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
         <CreatePostForm user={user} />

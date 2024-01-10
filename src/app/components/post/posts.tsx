@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { type Session } from "next-auth";
 import { toast } from "sonner";
 
-import { type User, useTempPosts, useDeletedPosts } from "~/lib/useStore";
+import { useUser, useTempPosts, useDeletedPosts } from "~/lib/useStore";
 
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
@@ -14,11 +13,11 @@ import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 
 type PostsProps = {
-  session?: Session | null;
   authorId?: string;
 };
 
-export function Posts({ session, authorId }: PostsProps) {
+export function Posts({ authorId }: PostsProps) {
+  const user = useUser();
   const tempPosts = useTempPosts();
   const { ref, inView } = useInView();
   const deletedPosts = useDeletedPosts();
@@ -58,10 +57,10 @@ export function Posts({ session, authorId }: PostsProps) {
 
   return (
     <div className="pb-24 md:pb-0">
-      {!authorId && <CreatePost />}
+      <CreatePost onProfilePage={authorId ? true : false} />
       <DeletePostModal />
 
-      {session && tempPosts.length !== 0
+      {user && tempPosts.length !== 0
         ? tempPosts
             .filter((post) => !deletedPosts.includes(post.id))
             .map((post) => {
@@ -70,8 +69,8 @@ export function Posts({ session, authorId }: PostsProps) {
                   key={post.id}
                   post={{
                     ...post,
-                    authorId: session.user.id,
-                    author: session.user as User,
+                    authorId: user.id,
+                    author: user,
                   }}
                 />
               );
