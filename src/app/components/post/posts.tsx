@@ -15,9 +15,10 @@ import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 
 type PostsProps = {
   session?: Session | null;
+  authorId?: string;
 };
 
-export function Posts({ session }: PostsProps) {
+export function Posts({ session, authorId }: PostsProps) {
   const tempPosts = useTempPosts();
   const { ref, inView } = useInView();
   const deletedPosts = useDeletedPosts();
@@ -30,7 +31,7 @@ export function Posts({ session }: PostsProps) {
     fetchNextPage,
     isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
-    {},
+    { author: authorId ?? undefined },
     {
       getNextPageParam: (lastPage) => lastPage.nextPageCursor ?? undefined,
     },
@@ -57,7 +58,7 @@ export function Posts({ session }: PostsProps) {
 
   return (
     <div className="pb-24 md:pb-0">
-      <CreatePost />
+      {!authorId && <CreatePost />}
       <DeletePostModal />
 
       {session && tempPosts.length !== 0
