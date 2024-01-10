@@ -2,22 +2,21 @@
 
 import React, { useEffect } from "react";
 import { type Session } from "next-auth";
+import { api } from "~/trpc/react";
 import { toast } from "sonner";
 
-import { type User, useTempPosts, useDeletedPosts } from "~/lib/useStore";
-
-import { api } from "~/trpc/react";
-import { PostItem } from "./post-item";
-import { CreatePost } from "./create-post";
-import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
+import { DeletePostModal } from "../components/modals";
+import { PostItem } from "../components/post/post-item";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
+import { type User, useTempPosts, useDeletedPosts } from "~/lib/useStore";
 
 type PostsProps = {
   session?: Session | null;
+  authorId?: string;
 };
 
-export function Posts({ session }: PostsProps) {
+export function UserFeed({ session, authorId }: PostsProps) {
   const tempPosts = useTempPosts();
   const { ref, inView } = useInView();
   const deletedPosts = useDeletedPosts();
@@ -30,7 +29,7 @@ export function Posts({ session }: PostsProps) {
     fetchNextPage,
     isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
-    {},
+    { author: authorId },
     {
       getNextPageParam: (lastPage) => lastPage.nextPageCursor ?? undefined,
     },
@@ -56,8 +55,7 @@ export function Posts({ session }: PostsProps) {
   };
 
   return (
-    <div className="pb-24 md:pb-0">
-      <CreatePost />
+    <section className="pb-24 md:pb-0">
       <DeletePostModal />
 
       {session && tempPosts.length !== 0
@@ -98,6 +96,6 @@ export function Posts({ session }: PostsProps) {
           <LoadingSkeleton />
         </div>
       )}
-    </div>
+    </section>
   );
 }

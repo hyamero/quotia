@@ -11,6 +11,7 @@ import {
 
 import { type User, useUser } from "~/lib/useStore";
 import { Button } from "~/app/components/ui/button";
+import { UserFeed } from "./user-feed";
 
 export default function UserProfile({ user }: { user?: User }) {
   if (!user) {
@@ -45,27 +46,31 @@ export default function UserProfile({ user }: { user?: User }) {
   };
 
   return (
-    <section>
-      <div className="flex items-center justify-between py-5">
-        <div>
-          <p className="text-3xl font-bold">{user.name}</p>
-          <span className="text-zinc-400">{slug()}</span>
+    <main>
+      <section>
+        <div className="flex items-center justify-between py-5">
+          <div>
+            <p className="text-3xl font-bold">{user.name}</p>
+            <span className="text-zinc-400">{slug()}</span>
+          </div>
+          <Avatar className="h-24 w-24">
+            <AvatarImage
+              className="rounded-full"
+              src={user.image as string | undefined}
+              alt={`${user.name}'s avatar`}
+            />
+            <AvatarFallback className="text-xs">
+              {user.name?.split(" ").at(0)}
+            </AvatarFallback>
+          </Avatar>
         </div>
-        <Avatar className="h-24 w-24">
-          <AvatarImage
-            className="rounded-full"
-            src={user.image as string | undefined}
-            alt={`${user.name}'s avatar`}
-          />
-          <AvatarFallback className="text-xs">
-            {user.name?.split(" ").at(0)}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-      <Button variant="outline" className="w-full">
-        Edit Profile
-      </Button>
-    </section>
+        <Button variant="outline" className="w-full">
+          Edit Profile
+        </Button>
+      </section>
+
+      <UserFeed authorId={user.id} />
+    </main>
   );
 }
 
