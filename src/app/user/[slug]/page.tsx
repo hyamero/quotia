@@ -21,8 +21,12 @@ export async function generateMetadata({
     },
   })) as User;
 
+  const title = user
+    ? `${user.name} (@${user.slug}) on Quotia`
+    : "User not found | Quotia";
+
   return {
-    title: `${user.name} (@${user.slug}) on Quotia`,
+    title: title,
   };
 }
 
