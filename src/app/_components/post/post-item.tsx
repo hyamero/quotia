@@ -209,7 +209,7 @@ export function HoverCardProfile({
         {author.id !== userId && (
           <Button
             title="follow"
-            onClick={() => toast.info("Feature Coming soon!")}
+            onClick={() => toast.info("Feature coming soon!")}
             className="mt-4 w-full"
           >
             Follow

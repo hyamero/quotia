@@ -10,8 +10,8 @@ import {
 } from "~/app/_components/ui/avatar";
 
 import { type User, useUser } from "~/lib/useStore";
-import { Button } from "~/app/_components/ui/button";
 import { Posts } from "../_components/post/posts";
+import { EditUserModal } from "./edit-user-modal";
 
 export default function UserProfile({ user }: { user?: User }) {
   if (!user) {
@@ -64,9 +64,7 @@ export default function UserProfile({ user }: { user?: User }) {
             </AvatarFallback>
           </Avatar>
         </div>
-        <Button variant="outline" className="w-full">
-          Edit Profile
-        </Button>
+        <EditUserModal user={user}>Edit Profile</EditUserModal>
       </section>
 
       {/* User Feed with authorId param
