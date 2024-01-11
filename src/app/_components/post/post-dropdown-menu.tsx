@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/app/components/ui/dropdown-menu";
+} from "~/app/_components/ui/dropdown-menu";
 
 type PostDropdownMenuProps = {
   postId: string;

@@ -12,14 +12,14 @@ import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "~/app/components/ui/avatar";
+} from "~/app/_components/ui/avatar";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from "~/app/components/ui/tooltip";
+} from "~/app/_components/ui/tooltip";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

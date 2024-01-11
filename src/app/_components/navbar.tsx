@@ -26,7 +26,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "~/app/components/ui/sheet";
+} from "~/app/_components/ui/sheet";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import type { Session } from "next-auth";

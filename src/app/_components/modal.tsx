@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "~/app/components/ui/dialog";
+} from "~/app/_components/ui/dialog";
 import { Button } from "./ui/button";
 
 type ModalProps = {

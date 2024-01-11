@@ -22,13 +22,13 @@ import {
 
 import { Button } from "../ui/button";
 import { Drawer, DrawerContent } from "../ui/drawer";
-import { Dialog, DialogContent } from "~/app/components/ui/dialog";
+import { Dialog, DialogContent } from "~/app/_components/ui/dialog";
 
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
-} from "~/app/components/ui/avatar";
+} from "~/app/_components/ui/avatar";
 
 export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
   const user = useUser();

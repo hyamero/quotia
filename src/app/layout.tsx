@@ -6,9 +6,9 @@ import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
 import { getServerAuthSession } from "~/server/auth";
 
-import { Toaster } from "~/app/components/ui/sonner";
-import { LoginModal } from "./components/modals";
-import { Navbar } from "./components/navbar";
+import { Toaster } from "~/app/_components/ui/sonner";
+import { LoginModal } from "./_components/modals";
+import { Navbar } from "./_components/navbar";
 import type { User } from "~/lib/useStore";
 
 export const metadata = {

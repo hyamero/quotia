@@ -1,4 +1,4 @@
-import { Posts } from "./components/post/posts";
+import { Posts } from "./_components/post/posts";
 
 export default async function Home() {
   return (

@@ -7,11 +7,11 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "~/app/components/ui/avatar";
+} from "~/app/_components/ui/avatar";
 
 import { type User, useUser } from "~/lib/useStore";
-import { Button } from "~/app/components/ui/button";
-import { Posts } from "../components/post/posts";
+import { Button } from "~/app/_components/ui/button";
+import { Posts } from "../_components/post/posts";
 
 export default function UserProfile({ user }: { user?: User }) {
   if (!user) {
