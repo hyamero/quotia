@@ -1,27 +1,31 @@
-import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
-import { type Post, useUser } from "~/lib/useStore";
-import { formatDistance } from "~/hooks/format-distance";
+import { toast } from "sonner";
+import Link from "next/link";
+
+import { type Post, type User, useUser } from "~/lib/useStore";
 import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
+import { formatDistance } from "~/hooks/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { PostDropdownMenu } from "./post-dropdown-menu";
-
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "~/app/_components/ui/avatar";
+import { CalendarDays } from "lucide-react";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from "~/app/_components/ui/tooltip";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+} from "../ui/tooltip";
+
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
+import { Button } from "../ui/button";
 
 export function PostItem({ post }: { post: Post }) {
   const user = useUser();
@@ -83,9 +87,14 @@ export function PostItem({ post }: { post: Post }) {
 
         <div className="w-full">
           <div className="flex justify-between">
-            <Link href={`/user/${userSlug}`} className="font-semibold">
-              {post.author.name}
-            </Link>
+            <HoverCardProfile author={post.author} userId={user?.id}>
+              <Link
+                href={`/user/${userSlug}`}
+                className="font-semibold hover:underline"
+              >
+                {post.author.name}
+              </Link>
+            </HoverCardProfile>
 
             <div className="flex items-center gap-2">
               <TooltipProvider>
@@ -146,5 +155,67 @@ export function PostItem({ post }: { post: Post }) {
         </div>
       </div>
     </div>
+  );
+}
+
+type HoverCardProfileProps = {
+  children: React.ReactNode;
+  author: User;
+  userId: string | undefined;
+};
+
+export function HoverCardProfile({
+  children,
+  author,
+  userId,
+}: HoverCardProfileProps) {
+  const userSlug = author.slug ? "@" + author.slug : author.id;
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
+      <HoverCardContent className="w-80">
+        <div className="flex items-center justify-between space-x-4">
+          <div className="space-y-3">
+            <div>
+              <h4 className="text-lg font-semibold">{author.name}</h4>
+              {author.slug && (
+                <h4 className="text-sm font-normal text-zinc-200">
+                  {"@" + author.slug}
+                </h4>
+              )}
+            </div>
+            <div className="flex items-center">
+              <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
+              <span className="text-xs text-muted-foreground">
+                Joined December 2021
+              </span>
+            </div>
+          </div>
+
+          <Link href={`/user/${userSlug}`} className="font-semibold">
+            <Avatar className="h-16 w-16">
+              <AvatarImage
+                className="rounded-full"
+                src={author.image as string | undefined}
+                alt={`${author.name}'s avatar`}
+              />
+              <AvatarFallback className="text-xs">
+                {author.name?.split(" ").at(0)}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
+        {author.id !== userId && (
+          <Button
+            title="follow"
+            onClick={() => toast.info("Feature Coming soon!")}
+            className="mt-4 w-full"
+          >
+            Follow
+          </Button>
+        )}
+      </HoverCardContent>
+    </HoverCard>
   );
 }
