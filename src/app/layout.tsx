@@ -24,19 +24,21 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
-  const user = (await api.user.getUser.query({
-    id: session?.user?.id ?? "",
-    columns: {
-      slug: true,
-    },
-  })) as User;
+  const user =
+    session &&
+    ((await api.user.getUser.query({
+      id: session?.user?.id ?? "",
+      columns: {
+        slug: true,
+      },
+    })) as User);
 
   return (
     <html lang="en">
       <body className={`px-4 font-sans sm:px-10 ${GeistSans.variable}`}>
         <TRPCReactProvider cookies={cookies().toString()}>
           <Toaster />
-          <Navbar session={session} slug={user.slug} />
+          <Navbar session={session} slug={user?.slug} />
           <LoginModal />
           <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">
             {children}
