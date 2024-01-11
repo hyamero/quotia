@@ -3,7 +3,7 @@ import { eq, or } from "drizzle-orm";
 
 import {
   createTRPCRouter,
-  //   protectedProcedure,
+  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 
@@ -34,5 +34,22 @@ export const userRouter = createTRPCRouter({
           image: input.columns?.image,
         },
       });
+    }),
+
+  editUser: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(3).max(30),
+        slug: z.string().min(3).max(30),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(users)
+        .set({
+          name: input.name,
+          slug: input.slug,
+        })
+        .where(eq(users.id, ctx.session.user.id));
     }),
 });
