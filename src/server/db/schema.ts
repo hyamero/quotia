@@ -41,11 +41,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 export const likes = mysqlTable(
   "like",
   {
-    userId: varchar("userId", { length: 255 }).notNull().unique(),
-    postId: varchar("postId", { length: 255 })
-      .notNull()
-      .unique()
-      .references(() => posts.id, { onDelete: "cascade" }),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    postId: varchar("postId", { length: 255 }).notNull(),
   },
   (like) => {
     return {
@@ -70,6 +67,9 @@ export const users = mysqlTable("user", {
     mode: "date",
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
   image: varchar("image", { length: 255 }),
 });
 
