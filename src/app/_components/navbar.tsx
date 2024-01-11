@@ -53,7 +53,7 @@ export function Navbar({
 
   const user = useUser();
 
-  const slugParam = user?.slug ? "@" + user.slug : "";
+  const slugParam = user?.slug ? "@" + user.slug : user?.id;
 
   return (
     <nav>

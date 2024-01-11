@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import {
@@ -11,9 +11,17 @@ import {
 
 import { type User, useUser } from "~/lib/useStore";
 import { Posts } from "../_components/post/posts";
-import { EditUserModal } from "./edit-user-modal";
+import { EditUserModal } from "./edit-profile-modal";
+import { Button } from "../_components/ui/button";
+import { toast } from "sonner";
 
 export default function UserProfile({ user }: { user?: User }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!user) {
     return <NoUser />;
   }
@@ -46,31 +54,57 @@ export default function UserProfile({ user }: { user?: User }) {
   };
 
   return (
-    <main>
-      <section>
-        <div className="flex items-center justify-between py-5">
-          <div>
-            <p className="text-3xl font-bold">{user.name}</p>
-            <span className="text-zinc-400">{slug()}</span>
+    mounted && (
+      <main>
+        <section>
+          <div className="flex items-center justify-between py-5">
+            <div>
+              <p className="text-3xl font-bold">{user.name}</p>
+              <span className="text-zinc-400">{slug()}</span>
+            </div>
+            <Avatar className="h-24 w-24">
+              <AvatarImage
+                className="rounded-full"
+                src={user.image as string | undefined}
+                alt={`${user.name}'s avatar`}
+              />
+              <AvatarFallback className="text-xs">
+                {user.name?.split(" ").at(0)}
+              </AvatarFallback>
+            </Avatar>
           </div>
-          <Avatar className="h-24 w-24">
-            <AvatarImage
-              className="rounded-full"
-              src={user.image as string | undefined}
-              alt={`${user.name}'s avatar`}
-            />
-            <AvatarFallback className="text-xs">
-              {user.name?.split(" ").at(0)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <EditUserModal user={user}>Edit Profile</EditUserModal>
-      </section>
+          {isCurrentUser ? (
+            <EditUserModal user={user} />
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                title="Follow"
+                type="button"
+                variant="outline"
+                onClick={() => toast.info("Feature coming soon!")}
+                className=" w-full"
+              >
+                Follow
+              </Button>
 
-      {/* User Feed with authorId param
+              <Button
+                title="Mention"
+                type="button"
+                variant="outline"
+                onClick={() => toast.info("Feature coming soon!")}
+                className=" w-full"
+              >
+                Mention
+              </Button>
+            </div>
+          )}
+        </section>
+
+        {/* User Feed with authorId param
        to list user's posts */}
-      <Posts authorId={user.id} />
-    </main>
+        <Posts authorId={user.id} />
+      </main>
+    )
   );
 }
 
