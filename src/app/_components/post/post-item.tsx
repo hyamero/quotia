@@ -4,9 +4,9 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import Link from "next/link";
 
-import { type Post, type User, useUser } from "~/lib/useStore";
+import type { Post, User } from "~/lib/types";
 import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
-import { formatDistance } from "~/hooks/format-distance";
+import { formatDistance } from "~/lib/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
@@ -26,9 +26,10 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import { Button } from "../ui/button";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 export function PostItem({ post }: { post: Post }) {
-  const user = useUser();
+  const user = useBoundStore((state) => state.user);
   const router = useRouter();
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);

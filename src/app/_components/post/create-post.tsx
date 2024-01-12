@@ -11,14 +11,7 @@ import {
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import type { Session } from "next-auth";
-import useMediaQuery from "~/hooks/use-media-query";
-
-import {
-  useUser,
-  usePostActions,
-  usePostFormModal,
-  useModalActions,
-} from "~/lib/useStore";
+import useMediaQuery from "~/lib/use-media-query";
 
 import { Button } from "../ui/button";
 import { Drawer, DrawerContent } from "../ui/drawer";
@@ -29,13 +22,17 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "~/app/_components/ui/avatar";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
-  const user = useUser();
+  const user = useBoundStore((state) => state.user);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { setPostFormIsOpen } = useModalActions();
-  const postFormIsOpen = usePostFormModal();
+
+  const setPostFormIsOpen = useBoundStore(
+    (state) => state.modalActions.setPostFormIsOpen,
+  );
+  const postFormIsOpen = useBoundStore((state) => state.postFormIsOpen);
 
   if (!user) {
     return !onProfilePage && <CreatePostTrigger />;
@@ -65,9 +62,14 @@ export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
 }
 
 const CreatePostForm = ({ user }: { user: Session["user"] }) => {
-  const { togglePostFormIsOpen } = useModalActions();
   const [inputValue, setInputValue] = useState("");
-  const { setTempPosts } = usePostActions();
+
+  const togglePostFormIsOpen = useBoundStore(
+    (state) => state.modalActions.togglePostFormIsOpen,
+  );
+  const setTempPosts = useBoundStore(
+    (state) => state.tempPostActions.setTempPosts,
+  );
 
   const [textAreaCount, setTextAreaCount] = useState(0);
 
@@ -172,7 +174,12 @@ const CreatePostForm = ({ user }: { user: Session["user"] }) => {
 };
 
 const CreatePostTrigger = ({ user }: { user?: Session["user"] }) => {
-  const { togglePostFormIsOpen, toggleLoginModalIsOpen } = useModalActions();
+  const toggleLoginModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleLoginModalIsOpen,
+  );
+  const togglePostFormIsOpen = useBoundStore(
+    (state) => state.modalActions.togglePostFormIsOpen,
+  );
 
   return (
     <div className="hidden items-center gap-4 py-5 md:flex">

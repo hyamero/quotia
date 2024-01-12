@@ -9,11 +9,12 @@ import {
   AvatarImage,
 } from "~/app/_components/ui/avatar";
 
-import { type User, useUser } from "~/lib/useStore";
+import { type User } from "~/lib/types";
 import { Posts } from "../_components/post/posts";
 import { EditUserModal } from "./edit-profile-modal";
 import { Button } from "../_components/ui/button";
 import { toast } from "sonner";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 export default function UserProfile({ user }: { user?: User }) {
   const [mounted, setMounted] = useState(false);
@@ -26,7 +27,7 @@ export default function UserProfile({ user }: { user?: User }) {
     return <NoUser />;
   }
 
-  const currentUser = useUser();
+  const currentUser = useBoundStore((state) => state.user);
   const isCurrentUser = currentUser?.id === user?.id;
 
   useEffect(() => {

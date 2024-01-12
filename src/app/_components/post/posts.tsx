@@ -3,24 +3,24 @@
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 
-import { useUser, useTempPosts, useDeletedPosts } from "~/lib/useStore";
-
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
 import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 type PostsProps = {
   authorId?: string;
 };
 
 export function Posts({ authorId }: PostsProps) {
-  const user = useUser();
-  const tempPosts = useTempPosts();
+  const user = useBoundStore((state) => state.user);
+  const tempPosts = useBoundStore((state) => state.tempPosts);
+  const deletedPosts = useBoundStore((state) => state.deletedPosts);
+
   const { ref, inView } = useInView();
-  const deletedPosts = useDeletedPosts();
 
   const {
     data: posts,

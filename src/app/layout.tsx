@@ -9,7 +9,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { Toaster } from "~/app/_components/ui/sonner";
 import { LoginModal } from "./_components/modals";
 import { Navbar } from "./_components/navbar";
-import type { User } from "~/lib/useStore";
+import type { User } from "~/lib/types";
 
 export const metadata = {
   title: "Quotia",

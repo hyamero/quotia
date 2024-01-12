@@ -1,6 +1,6 @@
 import { api } from "~/trpc/server";
 import UserProfile from "../user-profile";
-import type { User } from "~/lib/useStore";
+import type { User } from "~/lib/types";
 
 const removeSlug = (param: string) => {
   return param.startsWith("%40") ? param.split("%40").at(1) : param;

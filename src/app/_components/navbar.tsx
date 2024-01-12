@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  type User,
-  useModalActions,
-  useSetSession,
-  useUser,
-} from "~/lib/useStore";
+import { type User } from "~/lib/types";
 
 import {
   PiHouseFill,
@@ -31,6 +26,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import type { Session } from "next-auth";
 import { useEffect } from "react";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 export function Navbar({
   session,
@@ -39,11 +35,17 @@ export function Navbar({
   session?: Session | null;
   slug: string | null | undefined;
 }) {
-  const setSession = useSetSession();
+  const setSession = useBoundStore((state) => state.setSession);
+
   const router = useRouter();
 
-  const { togglePostFormIsOpen } = useModalActions();
-  const { toggleLoginModalIsOpen } = useModalActions();
+  const togglePostFormIsOpen = useBoundStore(
+    (state) => state.modalActions.togglePostFormIsOpen,
+  );
+
+  const toggleLoginModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleLoginModalIsOpen,
+  );
 
   useEffect(() => {
     if (session) {
@@ -51,7 +53,7 @@ export function Navbar({
     } else setSession(null);
   }, [session, slug]);
 
-  const user = useUser();
+  const user = useBoundStore((state) => state.user);
 
   const slugParam = user?.slug ? "@" + user.slug : user?.id;
 
@@ -66,7 +68,7 @@ export function Navbar({
           <RiDoubleQuotesL />
         </Link>
 
-        <BurgerMenu />
+        <BurgerMenu user={user} />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 mx-auto flex max-w-screen-sm items-center justify-center gap-3 bg-zinc-950 bg-opacity-40 bg-clip-padding p-2 text-3xl backdrop-blur-xl backdrop-filter sm:px-10 md:bottom-auto md:top-0 md:z-50 md:bg-transparent md:px-14 md:text-[1.75rem] md:backdrop-blur-none [&>*:hover]:bg-zinc-900 [&>*]:flex [&>*]:w-full [&>*]:justify-center [&>*]:rounded-lg [&>*]:py-5 [&>*]:text-center [&>*]:text-zinc-700 [&>*]:transition-colors [&>*]:duration-300">
@@ -113,9 +115,7 @@ export function Navbar({
   );
 }
 
-const BurgerMenu = () => {
-  const user = useUser();
-
+const BurgerMenu = ({ user }: { user: User | null }) => {
   return (
     <Sheet>
       <SheetTrigger

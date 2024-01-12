@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "~/app/_components/ui/dialog";
 
-import { type User } from "~/lib/useStore";
+import { type User } from "~/lib/types";
 import { Input } from "~/app/_components/ui/input";
 import { Label } from "~/app/_components/ui/label";
 import { Button } from "~/app/_components/ui/button";
