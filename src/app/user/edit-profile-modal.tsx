@@ -1,8 +1,9 @@
 "use client";
 
-import { api } from "~/trpc/react";
-import { useState } from "react";
 import { toast } from "sonner";
+import { api } from "~/trpc/react";
+import { type FormEvent, useState } from "react";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 import {
   Dialog,
@@ -18,32 +19,45 @@ import { type User } from "~/lib/types";
 import { Input } from "~/app/_components/ui/input";
 import { Label } from "~/app/_components/ui/label";
 import { Button } from "~/app/_components/ui/button";
+import { useRouter } from "next/navigation";
 
 type EditUserModalProps = {
   user: User;
 };
 
 export function EditUserModal({ user }: EditUserModalProps) {
+  const router = useRouter();
+  const setSession = useBoundStore((state) => state.setSession);
+
+  const [name, setName] = useState(user.name ?? "");
+  const [slug, setSlug] = useState("@" + user.slug ?? "");
+
   const editUser = api.user.editUser.useMutation({
     onSuccess: () => {
       toast.success("Profile Updated!");
+      setSession({ ...user, slug: slug ?? null, name } as User);
+      router.replace(`/user/${slug ?? user.id}`);
     },
-    onMutate: () => toast.loading("Updating profile..."),
+    onMutate: () => {
+      toast.loading("Updating profile...");
+      router.prefetch(`/user/${slug ?? user.id}`);
+    },
     onError: () => {
       toast.error("Something went wrong. Try again later.");
     },
   });
 
-  const [name, setName] = useState(user.name ?? "");
-  const [slug, setSlug] = useState("@" + user.slug ?? "");
+  const handleEditUser = (e: FormEvent) => {
+    e.preventDefault();
 
-  const handleEditUser = () => {
     const _slug = slug.startsWith("@") ? slug.split("@").at(1) : slug;
 
-    editUser.mutate({
-      name: name,
-      slug: _slug!,
-    });
+    if (name !== user.name || _slug !== user.slug) {
+      editUser.mutate({
+        name: name,
+        slug: _slug!,
+      });
+    }
   };
 
   return (
@@ -60,7 +74,8 @@ export function EditUserModal({ user }: EditUserModalProps) {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleEditUser}>
+
+        <form onSubmit={(e) => handleEditUser(e)}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
