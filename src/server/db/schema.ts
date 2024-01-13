@@ -20,10 +20,7 @@ export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 export const posts = mysqlTable(
   "post",
   {
-    id: varchar("id", { length: 255 })
-      .notNull()
-      .primaryKey()
-      .references(() => likes.postId),
+    id: varchar("id", { length: 255 }).notNull().primaryKey(),
     authorId: varchar("authorId", { length: 255 }).notNull().unique(),
     content: varchar("content", { length: 500 }),
     createdAt: timestamp("created_at")
@@ -44,8 +41,8 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
 export const likes = mysqlTable(
   "like",
   {
-    userId: varchar("userId", { length: 255 }).notNull().unique(),
-    postId: varchar("postId", { length: 255 }).notNull().unique(),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    postId: varchar("postId", { length: 255 }).notNull(),
   },
   (like) => {
     return {
@@ -63,12 +60,16 @@ export const likesRelations = relations(likes, ({ one }) => ({
 
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  slug: varchar("slug", { length: 30 }).unique(),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
     fsp: 3,
   }).default(sql`CURRENT_TIMESTAMP(3)`),
+  createdAt: timestamp("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
   image: varchar("image", { length: 255 }),
 });
 

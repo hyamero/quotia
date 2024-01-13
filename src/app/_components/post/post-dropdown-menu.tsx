@@ -2,7 +2,6 @@
 
 import { toast } from "sonner";
 import { PiDotsThree } from "react-icons/pi";
-import { useModalActions, usePostActions, useUser } from "~/lib/useStore";
 
 import {
   DropdownMenu,
@@ -10,7 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/app/components/ui/dropdown-menu";
+} from "~/app/_components/ui/dropdown-menu";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 type PostDropdownMenuProps = {
   postId: string;
@@ -21,10 +21,14 @@ export function PostDropdownMenu({
   postId,
   postAuthor,
 }: PostDropdownMenuProps) {
-  const user = useUser();
+  const user = useBoundStore((state) => state.user);
   const isAuthor = user?.id === postAuthor;
-  const { setDeletePostId } = usePostActions();
-  const { toggleDeletePostModalIsOpen } = useModalActions();
+  const setDeletePostId = useBoundStore(
+    (state) => state.tempPostActions.setDeletePostId,
+  );
+  const toggleDeletePostModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleDeletePostModalIsOpen,
+  );
 
   const handleDeletePost = () => {
     setDeletePostId(postId);

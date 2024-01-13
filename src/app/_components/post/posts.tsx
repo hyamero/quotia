@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { type Session } from "next-auth";
 import { toast } from "sonner";
-
-import {
-  type User,
-  useTempPosts,
-  useSetSession,
-  useDeletedPosts,
-} from "~/lib/useStore";
 
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
@@ -17,22 +9,18 @@ import { CreatePost } from "./create-post";
 import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
-import { nanoid } from "nanoid";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 type PostsProps = {
-  session?: Session | null;
+  authorId?: string;
 };
 
-export function Posts({ session }: PostsProps) {
-  const tempPosts = useTempPosts();
-  const setSession = useSetSession();
-  const { ref, inView } = useInView();
-  const deletedPosts = useDeletedPosts();
+export function Posts({ authorId }: PostsProps) {
+  const user = useBoundStore((state) => state.user);
+  const tempPosts = useBoundStore((state) => state.tempPosts);
+  const deletedPosts = useBoundStore((state) => state.deletedPosts);
 
-  useEffect(() => {
-    if (session) setSession(session.user);
-    else setSession(null);
-  }, [session]);
+  const { ref, inView } = useInView();
 
   const {
     data: posts,
@@ -42,7 +30,7 @@ export function Posts({ session }: PostsProps) {
     fetchNextPage,
     isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
-    {},
+    { author: authorId ?? undefined },
     {
       getNextPageParam: (lastPage) => lastPage.nextPageCursor ?? undefined,
     },
@@ -68,11 +56,11 @@ export function Posts({ session }: PostsProps) {
   };
 
   return (
-    <div className="mt-24 w-full max-w-lg pb-24 md:pb-0 xl:max-w-xl">
-      <CreatePost />
+    <div className="pb-24 md:pb-0">
+      <CreatePost onProfilePage={authorId ? true : false} />
       <DeletePostModal />
 
-      {session && tempPosts.length !== 0
+      {user && tempPosts.length !== 0
         ? tempPosts
             .filter((post) => !deletedPosts.includes(post.id))
             .map((post) => {
@@ -81,16 +69,16 @@ export function Posts({ session }: PostsProps) {
                   key={post.id}
                   post={{
                     ...post,
-                    authorId: session.user.id,
-                    author: session.user as User,
+                    authorId: user.id,
+                    author: user,
                   }}
                 />
               );
             })
         : null}
 
-      {posts?.pages.map((page) => (
-        <React.Fragment key={nanoid()}>
+      {posts?.pages.map((page, i) => (
+        <React.Fragment key={page.nextPageCursor?.id ?? i}>
           {page.posts
             .filter(
               (post) =>

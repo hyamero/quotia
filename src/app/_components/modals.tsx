@@ -4,18 +4,14 @@ import { toast } from "sonner";
 import { Modal } from "./modal";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
-
-import {
-  useLoginModal,
-  usePostActions,
-  useModalActions,
-  useDeletePostId,
-  useDeletePostModal,
-} from "~/lib/useStore";
+import { useBoundStore } from "~/lib/use-bound-store";
 
 export function LoginModal() {
-  const loginModalIsOpen = useLoginModal();
-  const { toggleLoginModalIsOpen } = useModalActions();
+  const loginModalIsOpen = useBoundStore((state) => state.loginModalIsOpen);
+
+  const toggleLoginModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleLoginModalIsOpen,
+  );
 
   const router = useRouter();
 
@@ -36,11 +32,17 @@ export function LoginModal() {
 }
 
 export function DeletePostModal() {
-  const DeletePostModalIsOpen = useDeletePostModal();
-  const { toggleDeletePostModalIsOpen } = useModalActions();
+  const DeletePostModalIsOpen = useBoundStore(
+    (state) => state.deletePostModalIsOpen,
+  );
+  const toggleDeletePostModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleDeletePostModalIsOpen,
+  );
 
-  const deletePostId = useDeletePostId();
-  const { setDeletedPosts } = usePostActions();
+  const deletePostId = useBoundStore((state) => state.deletePostId);
+  const setDeletedPosts = useBoundStore(
+    (state) => state.tempPostActions.setDeletedPosts,
+  );
 
   const deletePost = api.post.delete.useMutation({
     onSettled: () => {

@@ -1,12 +1,9 @@
-import { Posts } from "./components/post/posts";
-import { getServerAuthSession } from "~/server/auth";
+import { Posts } from "./_components/post/posts";
 
 export default async function Home() {
-  const session = await getServerAuthSession();
-
   return (
     <main className="flex min-h-screen flex-col items-center text-white">
-      <Posts session={session} />
+      <Posts />
     </main>
   );
 }

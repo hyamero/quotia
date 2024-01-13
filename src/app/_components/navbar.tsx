@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useModalActions, useUser } from "~/lib/useStore";
+import { type User } from "~/lib/types";
 
 import {
   PiHouseFill,
@@ -21,17 +21,41 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "~/app/components/ui/sheet";
+} from "~/app/_components/ui/sheet";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import type { Session } from "next-auth";
+import { useEffect } from "react";
+import { useBoundStore } from "~/lib/use-bound-store";
 
-export function Navbar() {
-  const { togglePostFormIsOpen } = useModalActions();
-  const user = useUser();
+export function Navbar({
+  session,
+  slug,
+}: {
+  session?: Session | null;
+  slug: string | null | undefined;
+}) {
+  const setSession = useBoundStore((state) => state.setSession);
 
   const router = useRouter();
 
-  const { toggleLoginModalIsOpen } = useModalActions();
+  const togglePostFormIsOpen = useBoundStore(
+    (state) => state.modalActions.togglePostFormIsOpen,
+  );
+
+  const toggleLoginModalIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleLoginModalIsOpen,
+  );
+
+  useEffect(() => {
+    if (session) {
+      setSession({ ...session.user, slug: slug ?? null } as User);
+    } else setSession(null);
+  }, [session, slug]);
+
+  const user = useBoundStore((state) => state.user);
+
+  const slugParam = user?.slug ? "@" + user.slug : user?.id;
 
   return (
     <nav>
@@ -44,7 +68,7 @@ export function Navbar() {
           <RiDoubleQuotesL />
         </Link>
 
-        <BurgerMenu />
+        <BurgerMenu user={user} />
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 z-40 mx-auto flex max-w-screen-sm items-center justify-center gap-3 bg-zinc-950 bg-opacity-40 bg-clip-padding p-2 text-3xl backdrop-blur-xl backdrop-filter sm:px-10 md:bottom-auto md:top-0 md:z-50 md:bg-transparent md:px-14 md:text-[1.75rem] md:backdrop-blur-none [&>*:hover]:bg-zinc-900 [&>*]:flex [&>*]:w-full [&>*]:justify-center [&>*]:rounded-lg [&>*]:py-5 [&>*]:text-center [&>*]:text-zinc-700 [&>*]:transition-colors [&>*]:duration-300">
@@ -77,10 +101,10 @@ export function Navbar() {
         <button
           title="profile"
           onClick={() => {
-            if (!user) {
+            if (!session) {
               toggleLoginModalIsOpen();
             } else {
-              router.push(`/user/${user.id}`);
+              router.push(`/user/${slugParam}`);
             }
           }}
         >
@@ -91,9 +115,7 @@ export function Navbar() {
   );
 }
 
-const BurgerMenu = () => {
-  const user = useUser();
-
+const BurgerMenu = ({ user }: { user: User | null }) => {
   return (
     <Sheet>
       <SheetTrigger
