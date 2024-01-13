@@ -16,6 +16,13 @@ import { Button } from "../_components/ui/button";
 import { toast } from "sonner";
 import { useBoundStore } from "~/lib/use-bound-store";
 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "~/app/_components/ui/tabs";
+
 export default function UserProfile({ user }: { user?: User }) {
   const [mounted, setMounted] = useState(false);
 
@@ -101,9 +108,37 @@ export default function UserProfile({ user }: { user?: User }) {
           )}
         </section>
 
-        {/* User Feed with authorId param
+        <Tabs defaultValue="posts" className="mt-5 w-full">
+          <TabsList className="w-full border-b bg-transparent">
+            <TabsTrigger value="posts" className="w-full">
+              Posts
+            </TabsTrigger>
+            <TabsTrigger value="replies" className="w-full">
+              Replies
+            </TabsTrigger>
+            <TabsTrigger value="likes" className="w-full">
+              Likes
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="posts">
+            {/* User Feed with authorId param
        to list user's posts */}
-        <Posts authorId={user.id} />
+            <Posts authorId={user.id} />
+          </TabsContent>
+
+          <TabsContent value="replies">
+            <div className="flex justify-center pt-10 text-xl font-semibold">
+              Replies tab coming soon..
+            </div>
+          </TabsContent>
+
+          <TabsContent value="likes">
+            <div className="flex justify-center pt-10 text-xl font-semibold">
+              Likes tab coming soon..
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
     )
   );
