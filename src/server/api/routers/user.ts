@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, eq, ne, or } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -50,9 +50,7 @@ export const userRouter = createTRPCRouter({
           name: input.name,
           slug: input.slug,
         })
-        .where(
-          and(eq(users.id, ctx.session.user.id), ne(users.slug, input.slug)),
-        );
+        .where(eq(users.id, ctx.session.user.id));
     }),
 
   slugAvaliable: protectedProcedure

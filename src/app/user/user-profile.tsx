@@ -53,11 +53,7 @@ export default function UserProfile({ user }: { user?: User }) {
     if (user.slug) {
       return "@" + user.slug;
     } else {
-      if (isCurrentUser) {
-        return "Edit slug";
-      } else {
-        return null;
-      }
+      return null;
     }
   };
 
