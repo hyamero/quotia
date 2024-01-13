@@ -1,25 +1,36 @@
 "use client";
 
+import * as z from "zod";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import { type FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useBoundStore } from "~/lib/use-bound-store";
 
 import {
   Dialog,
+  DialogTitle,
+  DialogHeader,
+  DialogTrigger,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
 } from "~/app/_components/ui/dialog";
 
 import { type User } from "~/lib/types";
 import { Input } from "~/app/_components/ui/input";
-import { Label } from "~/app/_components/ui/label";
 import { Button } from "~/app/_components/ui/button";
-import { useRouter } from "next/navigation";
+
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormMessage,
+  FormControl,
+  FormDescription,
+} from "~/app/_components/ui/form";
 
 type EditUserModalProps = {
   user: User;
@@ -29,39 +40,98 @@ export function EditUserModal({ user }: EditUserModalProps) {
   const router = useRouter();
   const setSession = useBoundStore((state) => state.setSession);
 
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [name, setName] = useState(user.name ?? "");
-  const [slug, setSlug] = useState("@" + user.slug ?? "");
+  const [slug, setSlug] = useState(user.slug ?? "");
 
-  const editUser = api.user.editUser.useMutation({
-    onSuccess: () => {
-      toast.success("Profile Updated!");
-      setSession({ ...user, slug: slug ?? null, name } as User);
-      router.replace(`/user/${slug ?? user.id}`);
-    },
-    onMutate: () => {
+  const {
+    mutate: editUser,
+    isSuccess,
+    isLoading,
+    isError,
+  } = api.user.editUser.useMutation();
+
+  useEffect(() => {
+    if (isLoading) {
       toast.loading("Updating profile...");
       router.prefetch(`/user/${slug ?? user.id}`);
-    },
-    onError: () => {
+    }
+
+    if (isSuccess) {
+      toast.success("Profile Updated!");
+      setModalIsOpen(false);
+      setSession({
+        ...user,
+        slug: slug ?? null,
+        name: name,
+      } as User);
+      router.replace(`/user/${slug ?? user.id}`);
+    }
+
+    if (isError) {
       toast.error("Something went wrong. Try again later.");
+    }
+  }, [isLoading, isSuccess, isError]);
+
+  const charWarning = (value: "max" | "min") => {
+    if (value === "max") {
+      return "The username must be 30 characters or less";
+    } else {
+      return "The username must be 3 characters or more";
+    }
+  };
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(3, { message: charWarning("min") })
+      .max(30, { message: charWarning("max") })
+      .regex(/^[a-z A-Z]+$/, "The name must contain only letters"),
+
+    slug: z
+      .string()
+      .min(3, { message: charWarning("min") })
+      .max(30, { message: charWarning("max") })
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "The username must contain only letters, numbers, period, and underscore (_)",
+      ),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user.name ?? "",
+      slug: user.slug ?? "",
     },
   });
 
-  const handleEditUser = (e: FormEvent) => {
-    e.preventDefault();
+  const slugAvailable = api.user.slugAvaliable.useQuery(form.watch("slug"), {
+    enabled: !!form.watch("slug"),
+  });
 
-    const _slug = slug.startsWith("@") ? slug.split("@").at(1) : slug;
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (!slugAvailable.data) {
+      toast.error("Username already taken.");
+      return;
+    }
 
-    if (name !== user.name || _slug !== user.slug) {
-      editUser.mutate({
-        name: name,
-        slug: _slug!,
+    if (data.name !== user.name || data.slug !== user.slug) {
+      editUser({
+        name: data.name,
+        slug: data.slug,
       });
+
+      setName(data.name);
+      setSlug(data.slug);
+    } else {
+      toast.info("No changes made.");
+      setModalIsOpen(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={modalIsOpen} onOpenChange={setModalIsOpen}>
       <DialogTrigger asChild>
         <Button title="Edit Profile" variant="outline" className="w-full">
           Edit Profile
@@ -75,41 +145,43 @@ export function EditUserModal({ user }: EditUserModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={(e) => handleEditUser(e)}>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                className="col-span-3"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="username" className="text-right">
-                Username
-              </Label>
-              <Input
-                id="username"
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogTrigger asChild>
-              <Button title="Save profile changes" type="submit">
-                Save changes
-              </Button>
-            </DialogTrigger>
-          </DialogFooter>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Display name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This is your public display name.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button title="submit" type="submit" className="w-full">
+              {isLoading ? "Saving..." : "Save"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
