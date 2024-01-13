@@ -1,6 +1,6 @@
-import { Skeleton } from "~/app/_components/ui/skeleton";
-import { nanoid } from "nanoid";
 import { useMemo } from "react";
+import { nanoid } from "nanoid";
+import { Skeleton } from "~/app/_components/ui/skeleton";
 
 export default function Loading() {
   const nanoKey = useMemo(
