@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, or } from "drizzle-orm";
+import { and, eq, ne, or } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -50,6 +50,22 @@ export const userRouter = createTRPCRouter({
           name: input.name,
           slug: input.slug,
         })
-        .where(eq(users.id, ctx.session.user.id));
+        .where(
+          and(eq(users.id, ctx.session.user.id), ne(users.slug, input.slug)),
+        );
+    }),
+
+  slugAvaliable: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: or(eq(users.id, input), eq(users.slug, input)),
+        columns: {
+          id: true,
+          slug: true,
+        },
+      });
+
+      return user ? false : true;
     }),
 });
