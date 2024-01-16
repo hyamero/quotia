@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -31,6 +33,7 @@ import { useBoundStore } from "~/lib/use-bound-store";
 export function PostItem({ post }: { post: Post }) {
   const user = useBoundStore((state) => state.user);
   const router = useRouter();
+  const pathname = usePathname();
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
   const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
@@ -72,7 +75,12 @@ export function PostItem({ post }: { post: Post }) {
 
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
-      <div className="flex w-full items-start gap-3">
+      <div
+        onClick={() => router.push(`/user/${userSlug}/post/${post.id}`)}
+        className={`flex w-full ${
+          pathname.includes("/post") ? "cursor-auto" : "cursor-pointer"
+        } items-start gap-3`}
+      >
         <Link href={`/user/${userSlug}`} className="font-semibold">
           <Avatar className="relative top-1">
             <AvatarImage
