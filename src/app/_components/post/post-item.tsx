@@ -76,7 +76,10 @@ export function PostItem({ post }: { post: Post }) {
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
       <div
-        onClick={() => router.push(`/user/${userSlug}/post/${post.id}`)}
+        onClick={() => {
+          if (!pathname.includes("/post"))
+            router.push(`/user/${userSlug}/post/${post.id}`);
+        }}
         className={`flex w-full ${
           pathname.includes("/post") ? "cursor-auto" : "cursor-pointer"
         } items-start gap-3`}
