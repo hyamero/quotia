@@ -73,6 +73,32 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
+  getPost: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.query.posts.findFirst({
+        where: eq(posts.id, input.postId),
+        with: {
+          author: true,
+          likes: true,
+        },
+      });
+
+      return (
+        data && {
+          ...data,
+          likes: data.likes.length,
+          likedByUser: data.likes.some(
+            (like) => like.userId === ctx.session?.user.id,
+          ),
+        }
+      );
+    }),
+
   create: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
