@@ -76,7 +76,7 @@ export const comments = mysqlTable(
   "comment",
   {
     id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
+    authorId: varchar("authorId", { length: 255 }).notNull(),
     postId: varchar("postId", { length: 255 }).notNull(),
     content: varchar("content", { length: 500 }),
     createdAt: timestamp("created_at")
@@ -86,14 +86,14 @@ export const comments = mysqlTable(
   },
   (comment) => {
     return {
-      userIdIdx: index("userId_idx").on(comment.userId),
+      authorIdIdx: index("authorId_idx").on(comment.authorId),
       postIdIdx: index("postId_idx").on(comment.postId),
     };
   },
 );
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
-  user: one(users, { fields: [comments.userId], references: [users.id] }),
+  user: one(users, { fields: [comments.authorId], references: [users.id] }),
   post: one(posts, { fields: [comments.postId], references: [posts.id] }),
   likes: many(likes),
 }));
