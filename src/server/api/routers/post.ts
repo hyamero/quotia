@@ -149,7 +149,7 @@ export const postRouter = createTRPCRouter({
     }),
 
   createComment: protectedProcedure
-    .input(z.object({ postId: z.string() }))
+    .input(z.object({ postId: z.string(), content: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(comments).values({
         authorId: ctx.session.user.id,
@@ -162,6 +162,7 @@ export const postRouter = createTRPCRouter({
         orderBy: [desc(posts.createdAt)],
         columns: {
           id: true,
+          postId: true,
           authorId: true,
           content: true,
           createdAt: true,
