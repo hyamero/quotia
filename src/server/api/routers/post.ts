@@ -8,7 +8,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import { likes, posts } from "~/server/db/schema";
+import { comments, likes, posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
   inifiniteFeed: publicProcedure
@@ -105,7 +105,7 @@ export const postRouter = createTRPCRouter({
       await ctx.db.insert(posts).values({
         authorId: ctx.session.user.id,
         content: input.content,
-        id: nanoid(),
+        id: nanoid(11),
       });
 
       return await ctx.db.query.posts.findFirst({
@@ -146,5 +146,26 @@ export const postRouter = createTRPCRouter({
       } else {
         await ctx.db.delete(likes).where(condition);
       }
+    }),
+
+  createComment: protectedProcedure
+    .input(z.object({ postId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(comments).values({
+        userId: ctx.session.user.id,
+        postId: input.postId,
+        id: nanoid(11),
+      });
+
+      return await ctx.db.query.comments.findFirst({
+        where: eq(posts.authorId, ctx.session.user.id),
+        orderBy: [desc(posts.createdAt)],
+        columns: {
+          id: true,
+          userId: true,
+          content: true,
+          createdAt: true,
+        },
+      });
     }),
 });
