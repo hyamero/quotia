@@ -13,6 +13,15 @@ export type TempPostItem = Omit<
   "likes" | "likedByUser" | "updatedAt"
 >;
 
+export type CommentItem = {
+  postId: string;
+} & PostItem;
+
+export type TempCommentItem = Omit<
+  CommentItem,
+  "likes" | "likedByUser" | "updatedAt"
+>;
+
 export type User = {
   id: string;
   slug: string | null;
