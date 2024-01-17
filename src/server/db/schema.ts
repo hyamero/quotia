@@ -17,6 +17,10 @@ import { type AdapterAccount } from "next-auth/adapters";
 
 export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 
+/**
+ * Posts
+ */
+
 export const posts = mysqlTable(
   "post",
   {
@@ -36,7 +40,12 @@ export const posts = mysqlTable(
 export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
   likes: many(likes),
+  comments: many(comments),
 }));
+
+/**
+ * Likes
+ */
 
 export const likes = mysqlTable(
   "like",
@@ -58,6 +67,39 @@ export const likesRelations = relations(likes, ({ one }) => ({
   post: one(posts, { fields: [likes.postId], references: [posts.id] }),
 }));
 
+/**
+ * Comments
+ */
+
+export const comments = mysqlTable(
+  "comment",
+  {
+    userId: varchar("userId", { length: 255 }).notNull(),
+    postId: varchar("postId", { length: 255 }).notNull(),
+    content: varchar("content", { length: 500 }),
+    createdAt: timestamp("created_at")
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt").onUpdateNow(),
+  },
+  (comment) => {
+    return {
+      compoundKey: primaryKey(comment.userId, comment.postId),
+      userIdIdx: index("userId_idx").on(comment.userId),
+      postIdIdx: index("postId_idx").on(comment.postId),
+    };
+  },
+);
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one(users, { fields: [comments.userId], references: [users.id] }),
+  post: one(posts, { fields: [comments.postId], references: [posts.id] }),
+}));
+
+/**
+ * Users
+ */
+
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   slug: varchar("slug", { length: 30 }).unique(),
@@ -78,7 +120,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   posts: many(posts),
   likes: many(likes),
+  comments: many(comments),
 }));
+
+/**
+ * Next-Auth
+ */
 
 export const accounts = mysqlTable(
   "account",
