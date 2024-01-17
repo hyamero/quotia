@@ -65,6 +65,7 @@ export const likes = mysqlTable(
 export const likesRelations = relations(likes, ({ one }) => ({
   user: one(users, { fields: [likes.userId], references: [users.id] }),
   post: one(posts, { fields: [likes.postId], references: [posts.id] }),
+  comment: one(comments, { fields: [likes.postId], references: [comments.id] }),
 }));
 
 /**
@@ -74,6 +75,7 @@ export const likesRelations = relations(likes, ({ one }) => ({
 export const comments = mysqlTable(
   "comment",
   {
+    id: varchar("id", { length: 255 }).notNull().primaryKey(),
     userId: varchar("userId", { length: 255 }).notNull(),
     postId: varchar("postId", { length: 255 }).notNull(),
     content: varchar("content", { length: 500 }),
@@ -84,16 +86,16 @@ export const comments = mysqlTable(
   },
   (comment) => {
     return {
-      compoundKey: primaryKey(comment.userId, comment.postId),
       userIdIdx: index("userId_idx").on(comment.userId),
       postIdIdx: index("postId_idx").on(comment.postId),
     };
   },
 );
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, { fields: [comments.userId], references: [users.id] }),
   post: one(posts, { fields: [comments.postId], references: [posts.id] }),
+  likes: many(likes),
 }));
 
 /**
