@@ -10,6 +10,7 @@ import { DeletePostModal } from "../modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 import { useBoundStore } from "~/lib/use-bound-store";
+import { CreateComment } from "./create-comment";
 
 type PostsProps = {
   authorId?: string;
@@ -45,8 +46,9 @@ export function Posts({ authorId }: PostsProps) {
     }
   }, [fetchNextPage, inView]);
 
-  if (isLoading) return <Loading />;
   if (isError) toast.error(error.message);
+  if (isLoading) return <Loading />;
+  if (posts?.pages.length === 0) return <p>No posts found.</p>;
 
   const existsInTempPosts = (postId: string) => {
     const tempPostId = tempPosts.find((post) => post.id === postId);
@@ -58,6 +60,7 @@ export function Posts({ authorId }: PostsProps) {
   return (
     <div className="pb-24 md:pb-0">
       <CreatePost onProfilePage={authorId ? true : false} />
+      <CreateComment />
       <DeletePostModal />
 
       {user && tempPosts.length !== 0
