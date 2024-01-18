@@ -153,6 +153,7 @@ export const postRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(comments).values({
         authorId: ctx.session.user.id,
+        content: input.content,
         postId: input.postId,
         id: nanoid(11),
       });
