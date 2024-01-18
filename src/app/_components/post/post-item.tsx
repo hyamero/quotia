@@ -35,6 +35,9 @@ export function PostItem({ post }: { post: Post }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  const toggleCommentFormIsOpen = useBoundStore(
+    (state) => state.modalActions.toggleCommentFormIsOpen,
+  );
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
   const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
   const [likes, setLikes] = useState(
@@ -75,15 +78,7 @@ export function PostItem({ post }: { post: Post }) {
 
   return (
     <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
-      <div
-        onClick={() => {
-          if (!pathname.includes("/post"))
-            router.push(`/user/${userSlug}/post/${post.id}`);
-        }}
-        className={`flex w-full ${
-          pathname.includes("/post") ? "cursor-auto" : "cursor-pointer"
-        } items-start gap-3`}
-      >
+      <div className="flex w-full items-start gap-3">
         <Link href={`/user/${userSlug}`} className="font-semibold">
           <Avatar className="relative top-1">
             <AvatarImage
@@ -134,7 +129,17 @@ export function PostItem({ post }: { post: Post }) {
             </div>
           </div>
 
-          <p className="whitespace-pre-wrap">{post.content}</p>
+          <p
+            onClick={() => {
+              if (!pathname.includes("/post"))
+                router.push(`/user/${userSlug}/post/${post.id}`);
+            }}
+            className={`whitespace-pre-wrap ${
+              pathname.includes("/post") ? "cursor-auto" : "cursor-pointer"
+            }`}
+          >
+            {post.content}
+          </p>
 
           <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
             <button
@@ -156,6 +161,7 @@ export function PostItem({ post }: { post: Post }) {
               title="comment"
               type="button"
               className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+              onClick={() => toggleCommentFormIsOpen(post.id)}
             >
               <PiChatCircle className="text-2xl" />
             </button>
