@@ -30,7 +30,12 @@ import {
 import { Button } from "../ui/button";
 import { useBoundStore } from "~/lib/use-bound-store";
 
-export function PostItem({ post }: { post: Post }) {
+type PostItemProps = {
+  post: Post;
+  postType?: "post" | "comment";
+};
+
+export function PostItem({ post, postType = "post" }: PostItemProps) {
   const user = useBoundStore((state) => state.user);
   const router = useRouter();
   const pathname = usePathname();
@@ -125,51 +130,56 @@ export function PostItem({ post }: { post: Post }) {
               {/* 
                DropDownMenu
               */}
-              <PostDropdownMenu postId={post.id} postAuthor={post.authorId} />
+              {postType === "post" && (
+                <PostDropdownMenu postId={post.id} postAuthor={post.authorId} />
+              )}
             </div>
           </div>
 
-          <p
-            onClick={() => {
-              if (!pathname.includes("/post"))
-                router.push(`/user/${userSlug}/post/${post.id}`);
-            }}
-            className={`whitespace-pre-wrap ${
-              pathname.includes("/post") ? "cursor-auto" : "cursor-pointer"
-            }`}
-          >
-            {post.content}
-          </p>
-
-          <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
-            <button
-              title="like"
-              type="button"
-              className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-              onClick={() => {
-                handleToggleLikeCount();
-              }}
+          {!pathname.includes("/post") && postType === "post" ? (
+            <Link
+              href={`/user/${userSlug}/post/${post.id}`}
+              className="whitespace-pre-wrap"
             >
-              {likedByUser ? (
-                <PiHeartFill className="transform text-2xl text-red-500 transition-transform active:scale-90" />
-              ) : (
-                <PiHeart className="transform text-2xl transition-transform active:scale-90" />
-              )}
-            </button>
+              {post.content}
+            </Link>
+          ) : (
+            <p className="whitespace-pre-wrap">{post.content}</p>
+          )}
 
-            <button
-              title="comment"
-              type="button"
-              className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-              onClick={() => toggleCommentFormIsOpen(post.id)}
-            >
-              <PiChatCircle className="text-2xl" />
-            </button>
-          </div>
+          {postType === "post" && (
+            <>
+              <div className="relative right-[0.4rem] mt-[6px] text-[#e6e8ea]">
+                <button
+                  title="like"
+                  type="button"
+                  className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+                  onClick={() => {
+                    handleToggleLikeCount();
+                  }}
+                >
+                  {likedByUser ? (
+                    <PiHeartFill className="transform text-2xl text-red-500 transition-transform active:scale-90" />
+                  ) : (
+                    <PiHeart className="transform text-2xl transition-transform active:scale-90" />
+                  )}
+                </button>
 
-          <span className="text-zinc-500">
-            {(likeCount ? likeCount : "") + " " + likes}
-          </span>
+                <button
+                  title="comment"
+                  type="button"
+                  className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
+                  onClick={() => toggleCommentFormIsOpen(post)}
+                >
+                  <PiChatCircle className="text-2xl" />
+                </button>
+              </div>
+
+              <span className="text-zinc-500">
+                {(likeCount ? likeCount : "") + " " + likes}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>
