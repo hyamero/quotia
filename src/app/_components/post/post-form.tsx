@@ -23,10 +23,13 @@ import { useBoundStore } from "~/lib/use-bound-store";
 type PostFormProps = {
   user: Session["user"];
   formType: "post" | "comment";
-  postId?: string;
+  post?: {
+    postId: string;
+    author: string;
+  };
 };
 
-export const PostForm = ({ user, formType, postId }: PostFormProps) => {
+export const PostForm = ({ user, formType, post }: PostFormProps) => {
   const [inputValue, setInputValue] = useState("");
 
   const togglePostFormIsOpen = useBoundStore(
@@ -34,6 +37,10 @@ export const PostForm = ({ user, formType, postId }: PostFormProps) => {
   );
   const setTempPosts = useBoundStore(
     (state) => state.tempPostActions.setTempPosts,
+  );
+
+  const setCommentFormIsOpen = useBoundStore(
+    (state) => state.modalActions.setCommentFormIsOpen,
   );
   const setTempComments = useBoundStore(
     (state) => state.tempCommentsActions.setTempComments,
@@ -79,12 +86,15 @@ export const PostForm = ({ user, formType, postId }: PostFormProps) => {
   const createComment = api.post.createComment.useMutation({
     onSuccess: (data) => {
       setTempComments(data);
-      toast.success("Comment created!");
       setInputValue("");
+      setCommentFormIsOpen(false);
+      toast.success("Reply created!");
     },
-    onMutate: () => toast.loading("Creating comment..."),
+
+    onMutate: () => toast.loading("Creating reply..."),
     onError: () => {
       toast.error("Something went wrong. Try again later.");
+      setCommentFormIsOpen(false);
     },
   });
 
@@ -97,7 +107,9 @@ export const PostForm = ({ user, formType, postId }: PostFormProps) => {
       createPost.mutate({ content: inputValue });
       togglePostFormIsOpen();
     } else {
-      createComment.mutate({ content: inputValue, postId: postId! });
+      if (!post) return;
+
+      createComment.mutate({ content: inputValue, postId: post.postId });
     }
   };
 
@@ -122,7 +134,11 @@ export const PostForm = ({ user, formType, postId }: PostFormProps) => {
             value={inputValue}
             style={{ height: 0 }}
             // maxLength={500}
-            placeholder="Start a quote..."
+            placeholder={
+              formType === "post"
+                ? "Start a quote..."
+                : `Reply to ${post?.author}...`
+            }
             onChange={(e) => {
               setInputValue(e.target.value);
               setTextAreaCount(e.target.value.length);
