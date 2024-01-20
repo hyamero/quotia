@@ -2,6 +2,7 @@ import { api } from "~/trpc/server";
 import type { Post, User } from "~/lib/types";
 import { PostItem } from "~/app/_components/post/post-item";
 import { CreateComment } from "~/app/_components/post/create-comment";
+import { Posts } from "~/app/_components/post/posts";
 
 export async function generateMetadata({
   params,
@@ -34,10 +35,15 @@ export async function generateMetadata({
 export default async function Page({ params }: { params: { id: string } }) {
   const post = await api.post.getPost.query({ postId: params.id });
 
+  if (!post) return <p>Post not found.</p>;
+
   return (
     <>
       <CreateComment />
       <PostItem post={post as Post} />
+      <div className="my-3 rounded-3xl border-l-2 pl-4">
+        <Posts postId={post?.id} />
+      </div>
     </>
   );
 }
