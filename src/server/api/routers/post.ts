@@ -8,7 +8,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 
-import { comments, likes, posts } from "~/server/db/schema";
+import { likes, posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
   inifiniteFeed: publicProcedure
@@ -22,6 +22,7 @@ export const postRouter = createTRPCRouter({
           })
           .optional(),
         author: z.string().optional(),
+        postId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -31,10 +32,16 @@ export const postRouter = createTRPCRouter({
             lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
             ne(posts.id, input.cursor?.id ?? ""),
           )
-        : and(
-            lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
-            ne(posts.id, input.cursor?.id ?? ""),
-          );
+        : input.postId
+          ? and(
+              eq(posts.parentId, input.postId ?? ""),
+              lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+              ne(posts.id, input.cursor?.id ?? ""),
+            )
+          : and(
+              lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+              ne(posts.id, input.cursor?.id ?? ""),
+            );
 
       const data = await ctx.db.query.posts.findMany({
         orderBy: [desc(posts.createdAt)],
@@ -111,12 +118,6 @@ export const postRouter = createTRPCRouter({
       return await ctx.db.query.posts.findFirst({
         where: eq(posts.authorId, ctx.session.user.id),
         orderBy: [desc(posts.createdAt)],
-        columns: {
-          id: true,
-          authorId: true,
-          content: true,
-          createdAt: true,
-        },
       });
     }),
 
@@ -151,23 +152,16 @@ export const postRouter = createTRPCRouter({
   createComment: protectedProcedure
     .input(z.object({ postId: z.string(), content: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(comments).values({
+      await ctx.db.insert(posts).values({
         authorId: ctx.session.user.id,
         content: input.content,
-        postId: input.postId,
+        parentId: input.postId,
         id: nanoid(11),
       });
 
-      return await ctx.db.query.comments.findFirst({
+      return await ctx.db.query.posts.findFirst({
         where: eq(posts.authorId, ctx.session.user.id),
         orderBy: [desc(posts.createdAt)],
-        columns: {
-          id: true,
-          postId: true,
-          authorId: true,
-          content: true,
-          createdAt: true,
-        },
       });
     }),
 });

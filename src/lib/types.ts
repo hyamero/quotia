@@ -6,19 +6,11 @@ export type PostItem = {
   updatedAt: Date | null;
   likes: number;
   likedByUser: boolean;
+  parentId: string | null;
 };
 
 export type TempPostItem = Omit<
   PostItem,
-  "likes" | "likedByUser" | "updatedAt"
->;
-
-export type CommentItem = {
-  postId: string;
-} & PostItem;
-
-export type TempCommentItem = Omit<
-  CommentItem,
   "likes" | "likedByUser" | "updatedAt"
 >;
 
