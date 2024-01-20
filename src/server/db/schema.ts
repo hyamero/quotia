@@ -25,7 +25,8 @@ export const posts = mysqlTable(
   "post",
   {
     id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    authorId: varchar("authorId", { length: 255 }).notNull().unique(),
+    authorId: varchar("authorId", { length: 255 }).notNull(),
+    parentId: varchar("parentId", { length: 255 }),
     content: varchar("content", { length: 500 }),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -34,13 +35,13 @@ export const posts = mysqlTable(
   },
   (post) => ({
     authorIdIdx: index("authorId_idx").on(post.authorId),
+    parentIdIdx: index("parentId_idx").on(post.parentId),
   }),
 );
 
 export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
   likes: many(likes),
-  comments: many(comments),
 }));
 
 /**
@@ -65,37 +66,6 @@ export const likes = mysqlTable(
 export const likesRelations = relations(likes, ({ one }) => ({
   user: one(users, { fields: [likes.userId], references: [users.id] }),
   post: one(posts, { fields: [likes.postId], references: [posts.id] }),
-  comment: one(comments, { fields: [likes.postId], references: [comments.id] }),
-}));
-
-/**
- * Comments
- */
-
-export const comments = mysqlTable(
-  "comment",
-  {
-    id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    authorId: varchar("authorId", { length: 255 }).notNull(),
-    postId: varchar("postId", { length: 255 }).notNull(),
-    content: varchar("content", { length: 500 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt").onUpdateNow(),
-  },
-  (comment) => {
-    return {
-      authorIdIdx: index("authorId_idx").on(comment.authorId),
-      postIdIdx: index("postId_idx").on(comment.postId),
-    };
-  },
-);
-
-export const commentsRelations = relations(comments, ({ one, many }) => ({
-  user: one(users, { fields: [comments.authorId], references: [users.id] }),
-  post: one(posts, { fields: [comments.postId], references: [posts.id] }),
-  likes: many(likes),
 }));
 
 /**
@@ -122,7 +92,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   posts: many(posts),
   likes: many(likes),
-  comments: many(comments),
+  // comments: many(comments),
 }));
 
 /**
