@@ -1,4 +1,5 @@
 import type { StateCreator } from "zustand";
+import type { Post } from "../types";
 
 export type ModalSlice = {
   postFormIsOpen: boolean;
@@ -6,14 +7,14 @@ export type ModalSlice = {
   deletePostModalIsOpen: boolean;
   commentFormIsOpen: {
     isOpen: boolean;
-    postId: string;
+    post: Post;
   };
 
   modalActions: {
     setPostFormIsOpen: (modalState: boolean) => void;
     setCommentFormIsOpen: (modalState: boolean) => void;
     togglePostFormIsOpen: () => void;
-    toggleCommentFormIsOpen: (postId: string) => void;
+    toggleCommentFormIsOpen: (post: Post) => void;
     toggleLoginModalIsOpen: () => void;
     toggleDeletePostModalIsOpen: () => void;
   };
@@ -25,7 +26,9 @@ export const createModalSlice: StateCreator<ModalSlice> = (set) => ({
   deletePostModalIsOpen: false,
   commentFormIsOpen: {
     isOpen: false,
-    postId: "",
+    post: {
+      ...({} as Post),
+    },
   },
 
   modalActions: {
@@ -35,21 +38,21 @@ export const createModalSlice: StateCreator<ModalSlice> = (set) => ({
       })),
 
     setCommentFormIsOpen: (modalState) =>
-      set(() => ({
+      set((state) => ({
         commentFormIsOpen: {
           isOpen: modalState,
-          postId: "",
+          post: state.commentFormIsOpen.post,
         },
       })),
 
     togglePostFormIsOpen: () =>
       set((state) => ({ postFormIsOpen: !state.postFormIsOpen })),
 
-    toggleCommentFormIsOpen: (postId) =>
+    toggleCommentFormIsOpen: (post) =>
       set((state) => ({
         commentFormIsOpen: {
           isOpen: !state.commentFormIsOpen.isOpen,
-          postId: postId,
+          post: { ...post },
         },
       })),
 
