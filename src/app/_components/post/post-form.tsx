@@ -10,8 +10,9 @@ import {
 
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
-import type { Session } from "next-auth";
 import { Button } from "../ui/button";
+import type { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
 import {
   Avatar,
@@ -30,6 +31,7 @@ type PostFormProps = {
 };
 
 export const PostForm = ({ user, formType, post }: PostFormProps) => {
+  const router = useRouter();
   const [inputValue, setInputValue] = useState("");
 
   const togglePostFormIsOpen = useBoundStore(
@@ -83,12 +85,23 @@ export const PostForm = ({ user, formType, post }: PostFormProps) => {
     },
   });
 
+  /**
+   * Create Comment Mutation
+   */
+
   const createComment = api.post.createComment.useMutation({
     onSuccess: (data) => {
       setTempComments(data);
       setInputValue("");
       setCommentFormIsOpen(false);
-      toast.success("Reply created!");
+      toast("Success!", {
+        description: "You have replied to the post.",
+        action: {
+          label: "View Reply",
+          onClick: () =>
+            router.push(`/user/${post?.author}/post/${post?.postId}`),
+        },
+      });
     },
 
     onMutate: () => toast.loading("Creating reply..."),
