@@ -1,13 +1,13 @@
 import type { StateCreator } from "zustand";
-import type { CommentItem, TempCommentItem } from "../types";
+import type { PostItem, TempPostItem } from "../types";
 
 export type TempCommentSlice = {
-  tempComments: CommentItem[];
+  tempComments: PostItem[];
   deletedComments: string[];
   deleteCommentId: string;
 
   tempCommentsActions: {
-    setTempComments: (newComment: TempCommentItem | undefined) => void;
+    setTempComments: (newComment: TempPostItem | undefined) => void;
     setDeletedComments: (commentId: string) => void;
     setDeleteCommentId: (commentId: string) => void;
   };
