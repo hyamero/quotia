@@ -14,9 +14,10 @@ import { CreateComment } from "./create-comment";
 
 type PostsProps = {
   authorId?: string;
+  postId?: string;
 };
 
-export function Posts({ authorId }: PostsProps) {
+export function Posts({ authorId, postId }: PostsProps) {
   const user = useBoundStore((state) => state.user);
   const tempPosts = useBoundStore((state) => state.tempPosts);
   const deletedPosts = useBoundStore((state) => state.deletedPosts);
@@ -31,7 +32,7 @@ export function Posts({ authorId }: PostsProps) {
     fetchNextPage,
     isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
-    { author: authorId ?? undefined },
+    { author: authorId ?? undefined, postId: postId ?? undefined },
     {
       getNextPageParam: (lastPage) => lastPage.nextPageCursor ?? undefined,
     },
@@ -59,7 +60,7 @@ export function Posts({ authorId }: PostsProps) {
 
   return (
     <div className="pb-24 md:pb-0">
-      <CreatePost onProfilePage={authorId ? true : false} />
+      <CreatePost onProfilePage={authorId ?? postId ? true : false} />
       <CreateComment />
       <DeletePostModal />
 

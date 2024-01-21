@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { eq, and, desc, lte, ne } from "drizzle-orm";
+import { eq, and, desc, lte, ne, isNull } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -41,6 +41,7 @@ export const postRouter = createTRPCRouter({
           : and(
               lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
               ne(posts.id, input.cursor?.id ?? ""),
+              isNull(posts.parentId),
             );
 
       const data = await ctx.db.query.posts.findMany({
