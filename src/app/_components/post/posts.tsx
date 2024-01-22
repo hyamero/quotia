@@ -6,11 +6,11 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
-import { DeletePostModal } from "../modals";
+import { DeletePostModal } from "../modal/modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 import { useBoundStore } from "~/lib/use-bound-store";
-import { CreateComment } from "./create-comment";
+import { CreateComment } from "../comment/create-comment";
 
 type PostsProps = {
   authorId?: string;

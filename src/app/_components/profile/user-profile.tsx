@@ -10,9 +10,9 @@ import {
 } from "~/app/_components/ui/avatar";
 
 import { type User } from "~/lib/types";
-import { Posts } from "../_components/post/posts";
+import { Posts } from "../post/posts";
 import { EditUserModal } from "./edit-profile-modal";
-import { Button } from "../_components/ui/button";
+import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { useBoundStore } from "~/lib/use-bound-store";
 

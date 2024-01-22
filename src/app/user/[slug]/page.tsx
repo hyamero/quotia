@@ -1,5 +1,5 @@
 import { api } from "~/trpc/server";
-import UserProfile from "../user-profile";
+import UserProfile from "../../_components/profile/user-profile";
 import type { User } from "~/lib/types";
 
 const removeSlug = (param: string) => {

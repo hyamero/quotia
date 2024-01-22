@@ -1,12 +1,12 @@
 "use client";
 
-import { PostForm } from "./post-form";
+import { PostForm } from "../post/post-form";
 import useMediaQuery from "~/lib/use-media-query";
 import { useBoundStore } from "~/lib/use-bound-store";
 
 import { Drawer, DrawerContent } from "../ui/drawer";
 import { Dialog, DialogContent } from "~/app/_components/ui/dialog";
-import { PostItem } from "./post-item";
+import { PostItem } from "../post/post-item";
 
 export function CreateComment() {
   const user = useBoundStore((state) => state.user);

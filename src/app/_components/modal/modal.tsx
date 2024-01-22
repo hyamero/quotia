@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/app/_components/ui/dialog";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 type ModalProps = {
   modalState: boolean;

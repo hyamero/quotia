@@ -7,7 +7,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { getServerAuthSession } from "~/server/auth";
 
 import { Toaster } from "~/app/_components/ui/sonner";
-import { LoginModal } from "./_components/modals";
+import { LoginModal } from "./_components/modal/modals";
 import { Navbar } from "./_components/navbar";
 import NextTopLoader from "nextjs-toploader";
 import type { User } from "~/lib/types";

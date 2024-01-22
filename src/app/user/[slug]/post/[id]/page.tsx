@@ -1,9 +1,9 @@
 import { api } from "~/trpc/server";
 import type { Post, User } from "~/lib/types";
 import { PostItem } from "~/app/_components/post/post-item";
-import { CreateComment } from "~/app/_components/post/create-comment";
+import { CreateComment } from "~/app/_components/comment/create-comment";
 import { Posts } from "~/app/_components/post/posts";
-import TempComments from "../temp-comments";
+import TempComments from "~/app/_components/comment/temp-comments";
 
 export async function generateMetadata({
   params,
