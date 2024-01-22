@@ -3,6 +3,7 @@ import type { Post, User } from "~/lib/types";
 import { PostItem } from "~/app/_components/post/post-item";
 import { CreateComment } from "~/app/_components/post/create-comment";
 import { Posts } from "~/app/_components/post/posts";
+import TempComments from "../temp-comments";
 
 export async function generateMetadata({
   params,
@@ -42,6 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       <CreateComment />
       <PostItem post={post as Post} />
       <div className="my-3 rounded-3xl border-l-2 pl-4">
+        <TempComments />
         <Posts postId={post?.id} />
       </div>
     </>
