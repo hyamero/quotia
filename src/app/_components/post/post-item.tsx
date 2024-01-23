@@ -175,9 +175,21 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
                 </button>
               </div>
 
-              <span className="text-zinc-500">
-                {(likeCount ? likeCount : "") + " " + likes}
-              </span>
+              <div className="space-x-3">
+                {!pathname.includes(post.id) && (
+                  <Link
+                    className="text-zinc-500"
+                    href={`/user/${post.author.slug ?? post.authorId}/post/${
+                      post.id
+                    }`}
+                  >
+                    replies
+                  </Link>
+                )}
+                <span className="text-zinc-500">
+                  {(likeCount ? likeCount : "") + " " + likes}
+                </span>
+              </div>
             </>
           )}
         </div>
