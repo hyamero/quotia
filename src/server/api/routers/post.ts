@@ -165,4 +165,14 @@ export const postRouter = createTRPCRouter({
         orderBy: [desc(posts.createdAt)],
       });
     }),
+
+  viewLikes: publicProcedure.input(z.object({ postId: z.string() })).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.likes.findMany({
+        where: eq(likes.postId, input.postId),
+        with: {
+          user: true,
+        },
+      }),
+  ),
 });
