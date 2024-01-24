@@ -25,3 +25,9 @@ export type User = {
 export type Post = PostItem & {
   author: User;
 };
+
+export type Like = {
+  postId: string;
+  userId: string;
+  user: User;
+};
