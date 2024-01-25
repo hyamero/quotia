@@ -5,7 +5,6 @@ export type ModalSlice = {
   postFormIsOpen: boolean;
   loginModalIsOpen: boolean;
   deletePostModalIsOpen: boolean;
-  likesModalIsOpen: boolean;
   commentFormIsOpen: {
     isOpen: boolean;
     post: Post;
@@ -14,7 +13,6 @@ export type ModalSlice = {
   modalActions: {
     setPostFormIsOpen: (modalState: boolean) => void;
     setCommentFormIsOpen: (modalState: boolean) => void;
-    setLikesModalIsOpen: (modalState: boolean) => void;
     togglePostFormIsOpen: () => void;
     toggleCommentFormIsOpen: (post: Post) => void;
     toggleLoginModalIsOpen: () => void;
@@ -26,7 +24,6 @@ export const createModalSlice: StateCreator<ModalSlice> = (set) => ({
   postFormIsOpen: false,
   loginModalIsOpen: false,
   deletePostModalIsOpen: false,
-  likesModalIsOpen: false,
   commentFormIsOpen: {
     isOpen: false,
     post: {
@@ -38,11 +35,6 @@ export const createModalSlice: StateCreator<ModalSlice> = (set) => ({
     setPostFormIsOpen: (modalState) =>
       set(() => ({
         postFormIsOpen: modalState,
-      })),
-
-    setLikesModalIsOpen: (modalState) =>
-      set(() => ({
-        likesModalIsOpen: modalState,
       })),
 
     setCommentFormIsOpen: (modalState) =>
