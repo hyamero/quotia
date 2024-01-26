@@ -6,7 +6,7 @@ import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import Link from "next/link";
 
-import type { Like, Post, User } from "~/lib/types";
+import type { Post, User } from "~/lib/types";
 import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
 import { formatDistance } from "~/lib/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
@@ -58,8 +58,6 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
     },
   });
 
-  const { data: postLikes } = api.post.viewLikes.useQuery({ postId: post.id });
-
   const handleToggleLikeCount = () => {
     if (!user) {
       toast("Not logged in?", {
@@ -91,7 +89,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
   return (
     <>
       <ViewLikes
-        postLikes={postLikes}
+        postId={post.id}
         likesModalIsOpen={likesModalIsOpen}
         setLikesModalIsOpen={setLikesModalIsOpen}
       />
@@ -219,16 +217,18 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
 }
 
 type ViewLikesProps = {
-  postLikes: Like[] | undefined;
+  postId: string;
   likesModalIsOpen: boolean;
   setLikesModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const ViewLikes = ({
-  postLikes,
+  postId,
   likesModalIsOpen,
   setLikesModalIsOpen,
 }: ViewLikesProps) => {
+  const { data: postLikes } = api.post.viewLikes.useQuery({ postId });
+
   return (
     <Dialog open={likesModalIsOpen} onOpenChange={setLikesModalIsOpen}>
       <DialogContent>
