@@ -93,7 +93,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
         likesModalIsOpen={likesModalIsOpen}
         setLikesModalIsOpen={setLikesModalIsOpen}
       />
-      <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6]">
+      <div className="flex items-start justify-between border-b py-5 text-[#f2f4f6] last:border-0">
         <div className="flex w-full items-start gap-3">
           <Link href={`/user/${userSlug}`} className="font-semibold">
             <Avatar className="relative top-1">
@@ -231,13 +231,61 @@ const ViewLikes = ({
 
   return (
     <Dialog open={likesModalIsOpen} onOpenChange={setLikesModalIsOpen}>
-      <DialogContent>
-        <ul>
-          {postLikes?.map((like) => (
-            <li key={like.postId + like.userId}>
-              {like.user.slug ? "@" + like.user.slug : like.user.name}
-            </li>
-          ))}
+      <DialogContent className="max-h-[70vh]">
+        <ul className="flex flex-col">
+          {postLikes?.map((like) => {
+            {
+              like.user.slug ? "@" + like.user.slug : like.user.name;
+            }
+
+            const user = like.user;
+            const userSlug = user.slug ? "@" + user.slug : user.id;
+
+            return (
+              <li
+                key={like.postId + like.userId}
+                className="border-b py-5 last:border-0"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-3 font-medium">
+                    <Link href={`/user/${userSlug}`} className="relative">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage
+                          className="rounded-full"
+                          src={user.image as string | undefined}
+                          alt={`${user.name}'s avatar`}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {user.name?.split(" ").at(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <PiHeartFill className="absolute -bottom-2 right-0 transform rounded-full bg-red-500 p-1  text-xl text-white transition-transform active:scale-90" />
+                    </Link>
+
+                    <div>
+                      <HoverCardProfile author={user} userId={user?.id}>
+                        <Link
+                          href={`/user/${userSlug}`}
+                          className="font-semibold hover:underline"
+                        >
+                          {user.slug ?? user.name}
+                        </Link>
+                      </HoverCardProfile>
+                      <p className="text-zinc-500">Quotia User</p>
+                    </div>
+                  </div>
+
+                  <Button
+                    title="follow"
+                    variant="outline"
+                    onClick={() => toast.info("Feature coming soon!")}
+                  >
+                    Follow
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </DialogContent>
     </Dialog>
