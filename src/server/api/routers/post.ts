@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { eq, and, desc, lte, ne } from "drizzle-orm";
+import { eq, and, desc, lte, ne, isNull } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -22,6 +22,7 @@ export const postRouter = createTRPCRouter({
           })
           .optional(),
         author: z.string().optional(),
+        postId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -31,10 +32,17 @@ export const postRouter = createTRPCRouter({
             lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
             ne(posts.id, input.cursor?.id ?? ""),
           )
-        : and(
-            lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
-            ne(posts.id, input.cursor?.id ?? ""),
-          );
+        : input.postId
+          ? and(
+              eq(posts.parentId, input.postId ?? ""),
+              lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+              ne(posts.id, input.cursor?.id ?? ""),
+            )
+          : and(
+              lte(posts.createdAt, input.cursor?.createdAt ?? new Date()),
+              ne(posts.id, input.cursor?.id ?? ""),
+              isNull(posts.parentId),
+            );
 
       const data = await ctx.db.query.posts.findMany({
         orderBy: [desc(posts.createdAt)],
@@ -73,24 +81,44 @@ export const postRouter = createTRPCRouter({
       };
     }),
 
+  getPost: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.query.posts.findFirst({
+        where: eq(posts.id, input.postId),
+        with: {
+          author: true,
+          likes: true,
+        },
+      });
+
+      return (
+        data && {
+          ...data,
+          likes: data.likes.length,
+          likedByUser: data.likes.some(
+            (like) => like.userId === ctx.session?.user.id,
+          ),
+        }
+      );
+    }),
+
   create: protectedProcedure
     .input(z.object({ content: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(posts).values({
         authorId: ctx.session.user.id,
         content: input.content,
-        id: nanoid(),
+        id: nanoid(11),
       });
 
       return await ctx.db.query.posts.findFirst({
         where: eq(posts.authorId, ctx.session.user.id),
         orderBy: [desc(posts.createdAt)],
-        columns: {
-          id: true,
-          authorId: true,
-          content: true,
-          createdAt: true,
-        },
       });
     }),
 
@@ -121,4 +149,30 @@ export const postRouter = createTRPCRouter({
         await ctx.db.delete(likes).where(condition);
       }
     }),
+
+  createComment: protectedProcedure
+    .input(z.object({ postId: z.string(), content: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(posts).values({
+        authorId: ctx.session.user.id,
+        content: input.content,
+        parentId: input.postId,
+        id: nanoid(11),
+      });
+
+      return await ctx.db.query.posts.findFirst({
+        where: eq(posts.authorId, ctx.session.user.id),
+        orderBy: [desc(posts.createdAt)],
+      });
+    }),
+
+  viewLikes: publicProcedure.input(z.object({ postId: z.string() })).query(
+    async ({ ctx, input }) =>
+      await ctx.db.query.likes.findMany({
+        where: eq(likes.postId, input.postId),
+        with: {
+          user: true,
+        },
+      }),
+  ),
 });

@@ -7,8 +7,9 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { getServerAuthSession } from "~/server/auth";
 
 import { Toaster } from "~/app/_components/ui/sonner";
-import { LoginModal } from "./_components/modals";
+import { LoginModal } from "./_components/modal/modals";
 import { Navbar } from "./_components/navbar";
+import NextTopLoader from "nextjs-toploader";
 import type { User } from "~/lib/types";
 
 export const metadata = {
@@ -36,8 +37,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`px-4 font-sans sm:px-10 ${GeistSans.variable}`}>
+        <NextTopLoader />
+        <Toaster />
         <TRPCReactProvider cookies={cookies().toString()}>
-          <Toaster />
           <Navbar session={session} slug={user?.slug} />
           <LoginModal />
           <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">

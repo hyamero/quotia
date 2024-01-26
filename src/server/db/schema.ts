@@ -17,11 +17,16 @@ import { type AdapterAccount } from "next-auth/adapters";
 
 export const mysqlTable = mysqlTableCreator((name) => `quotia_${name}`);
 
+/**
+ * Posts
+ */
+
 export const posts = mysqlTable(
   "post",
   {
     id: varchar("id", { length: 255 }).notNull().primaryKey(),
-    authorId: varchar("authorId", { length: 255 }).notNull().unique(),
+    authorId: varchar("authorId", { length: 255 }).notNull(),
+    parentId: varchar("parentId", { length: 255 }),
     content: varchar("content", { length: 500 }),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
@@ -30,6 +35,7 @@ export const posts = mysqlTable(
   },
   (post) => ({
     authorIdIdx: index("authorId_idx").on(post.authorId),
+    parentIdIdx: index("parentId_idx").on(post.parentId),
   }),
 );
 
@@ -37,6 +43,10 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
   likes: many(likes),
 }));
+
+/**
+ * Likes
+ */
 
 export const likes = mysqlTable(
   "like",
@@ -58,6 +68,10 @@ export const likesRelations = relations(likes, ({ one }) => ({
   post: one(posts, { fields: [likes.postId], references: [posts.id] }),
 }));
 
+/**
+ * Users
+ */
+
 export const users = mysqlTable("user", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
   slug: varchar("slug", { length: 30 }).unique(),
@@ -78,7 +92,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   posts: many(posts),
   likes: many(likes),
+  // comments: many(comments),
 }));
+
+/**
+ * Next-Auth
+ */
 
 export const accounts = mysqlTable(
   "account",

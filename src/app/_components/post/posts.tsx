@@ -6,16 +6,18 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { PostItem } from "./post-item";
 import { CreatePost } from "./create-post";
-import { DeletePostModal } from "../modals";
+import { DeletePostModal } from "../modal/modals";
 import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 import { useBoundStore } from "~/lib/use-bound-store";
+import { CreateComment } from "../comment/create-comment";
 
 type PostsProps = {
   authorId?: string;
+  postId?: string;
 };
 
-export function Posts({ authorId }: PostsProps) {
+export function Posts({ authorId, postId }: PostsProps) {
   const user = useBoundStore((state) => state.user);
   const tempPosts = useBoundStore((state) => state.tempPosts);
   const deletedPosts = useBoundStore((state) => state.deletedPosts);
@@ -30,7 +32,7 @@ export function Posts({ authorId }: PostsProps) {
     fetchNextPage,
     isFetchingNextPage,
   } = api.post.inifiniteFeed.useInfiniteQuery(
-    { author: authorId ?? undefined },
+    { author: authorId ?? undefined, postId: postId ?? undefined },
     {
       getNextPageParam: (lastPage) => lastPage.nextPageCursor ?? undefined,
     },
@@ -45,8 +47,9 @@ export function Posts({ authorId }: PostsProps) {
     }
   }, [fetchNextPage, inView]);
 
-  if (isLoading) return <Loading />;
   if (isError) toast.error(error.message);
+  if (isLoading) return <Loading />;
+  if (posts?.pages.length === 0) return <p>No posts found.</p>;
 
   const existsInTempPosts = (postId: string) => {
     const tempPostId = tempPosts.find((post) => post.id === postId);
@@ -57,7 +60,8 @@ export function Posts({ authorId }: PostsProps) {
 
   return (
     <div className="pb-24 md:pb-0">
-      <CreatePost onProfilePage={authorId ? true : false} />
+      <CreatePost onProfilePage={authorId ?? postId ? true : false} />
+      <CreateComment />
       <DeletePostModal />
 
       {user && tempPosts.length !== 0

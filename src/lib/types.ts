@@ -6,6 +6,7 @@ export type PostItem = {
   updatedAt: Date | null;
   likes: number;
   likedByUser: boolean;
+  parentId: string | null;
 };
 
 export type TempPostItem = Omit<
@@ -23,4 +24,10 @@ export type User = {
 
 export type Post = PostItem & {
   author: User;
+};
+
+export type Like = {
+  postId: string;
+  userId: string;
+  user: User;
 };
