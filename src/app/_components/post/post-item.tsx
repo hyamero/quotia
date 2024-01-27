@@ -1,19 +1,18 @@
 "use client";
 
+import Link from "next/link";
+import { toast } from "sonner";
+import { api } from "~/trpc/react";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { api } from "~/trpc/react";
-import { toast } from "sonner";
-import Link from "next/link";
 
-import type { Post, User } from "~/lib/types";
+import type { Post } from "~/lib/types";
 import { PiChatCircle, PiHeart, PiHeartFill } from "react-icons/pi";
 import { formatDistance } from "~/lib/format-distance";
 import { formatDistanceToNowStrict, formatRelative } from "date-fns";
 
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { PostDropdownMenu } from "./post-dropdown-menu";
-import { CalendarDays } from "lucide-react";
 
 import {
   Tooltip,
@@ -22,14 +21,9 @@ import {
   TooltipProvider,
 } from "../ui/tooltip";
 
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "../ui/hover-card";
-import { Button } from "../ui/button";
 import { useBoundStore } from "~/lib/use-bound-store";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { ProfileHoverCard } from "../profile/profile-hovercard";
+import { ViewLikes } from "./view-likes";
 
 type PostItemProps = {
   post: Post;
@@ -110,14 +104,14 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
 
           <div className="w-full">
             <div className="flex justify-between">
-              <HoverCardProfile author={post.author} userId={user?.id}>
+              <ProfileHoverCard author={post.author} userId={user?.id}>
                 <Link
                   href={`/user/${userSlug}`}
                   className="font-semibold hover:underline"
                 >
                   {post.author.name}
                 </Link>
-              </HoverCardProfile>
+              </ProfileHoverCard>
 
               <div className="flex items-center gap-2">
                 <TooltipProvider>
@@ -213,143 +207,5 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
         </div>
       </div>
     </>
-  );
-}
-
-type ViewLikesProps = {
-  postId: string;
-  likesModalIsOpen: boolean;
-  setLikesModalIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const ViewLikes = ({
-  postId,
-  likesModalIsOpen,
-  setLikesModalIsOpen,
-}: ViewLikesProps) => {
-  const { data: postLikes } = api.post.viewLikes.useQuery({ postId });
-
-  return (
-    <Dialog open={likesModalIsOpen} onOpenChange={setLikesModalIsOpen}>
-      <DialogContent className="max-h-[70vh]">
-        <ul className="flex flex-col">
-          {postLikes?.map((like) => {
-            {
-              like.user.slug ? "@" + like.user.slug : like.user.name;
-            }
-
-            const user = like.user;
-            const userSlug = user.slug ? "@" + user.slug : user.id;
-
-            return (
-              <li
-                key={like.postId + like.userId}
-                className="border-b py-5 last:border-0"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-3 font-medium">
-                    <Link href={`/user/${userSlug}`} className="relative">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage
-                          className="rounded-full"
-                          src={user.image as string | undefined}
-                          alt={`${user.name}'s avatar`}
-                        />
-                        <AvatarFallback className="text-xs">
-                          {user.name?.split(" ").at(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <PiHeartFill className="absolute -bottom-2 right-0 transform rounded-full bg-red-500 p-1  text-xl text-white transition-transform active:scale-90" />
-                    </Link>
-
-                    <div>
-                      <HoverCardProfile author={user} userId={user?.id}>
-                        <Link
-                          href={`/user/${userSlug}`}
-                          className="font-semibold hover:underline"
-                        >
-                          {user.slug ?? user.name}
-                        </Link>
-                      </HoverCardProfile>
-                      <p className="text-zinc-500">Quotia User</p>
-                    </div>
-                  </div>
-
-                  <Button
-                    title="follow"
-                    variant="outline"
-                    onClick={() => toast.info("Feature coming soon!")}
-                  >
-                    Follow
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-type HoverCardProfileProps = {
-  children: React.ReactNode;
-  author: User;
-  userId: string | undefined;
-};
-
-export function HoverCardProfile({
-  children,
-  author,
-  userId,
-}: HoverCardProfileProps) {
-  const userSlug = author.slug ? "@" + author.slug : author.id;
-
-  return (
-    <HoverCard>
-      <HoverCardTrigger asChild>{children}</HoverCardTrigger>
-      <HoverCardContent className="w-80">
-        <div className="flex items-center justify-between space-x-4">
-          <div className="space-y-3">
-            <div>
-              <h4 className="text-lg font-semibold">{author.name}</h4>
-              {author.slug && (
-                <h4 className="text-sm font-normal text-zinc-200">
-                  {"@" + author.slug}
-                </h4>
-              )}
-            </div>
-            <div className="flex items-center">
-              <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
-              <span className="text-xs text-muted-foreground">
-                Joined December 2021
-              </span>
-            </div>
-          </div>
-
-          <Link href={`/user/${userSlug}`} className="font-semibold">
-            <Avatar className="h-16 w-16">
-              <AvatarImage
-                className="rounded-full"
-                src={author.image as string | undefined}
-                alt={`${author.name}'s avatar`}
-              />
-              <AvatarFallback className="text-xs">
-                {author.name?.split(" ").at(0)}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
-        {author.id !== userId && (
-          <Button
-            title="follow"
-            onClick={() => toast.info("Feature coming soon!")}
-            className="mt-4 w-full"
-          >
-            Follow
-          </Button>
-        )}
-      </HoverCardContent>
-    </HoverCard>
   );
 }
