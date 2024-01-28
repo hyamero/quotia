@@ -42,6 +42,12 @@ export const posts = mysqlTable(
 export const postsRelations = relations(posts, ({ one, many }) => ({
   author: one(users, { fields: [posts.authorId], references: [users.id] }),
   likes: many(likes),
+  posts: one(posts, {
+    fields: [posts.parentId],
+    references: [posts.id],
+    relationName: "replies",
+  }),
+  replies: many(posts, { relationName: "replies" }),
 }));
 
 /**
@@ -92,7 +98,6 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   posts: many(posts),
   likes: many(likes),
-  // comments: many(comments),
 }));
 
 /**
