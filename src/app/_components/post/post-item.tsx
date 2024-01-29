@@ -40,7 +40,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
   );
 
   const [likedByUser, setLikedByUser] = useState(post.likedByUser);
-  const [likeCount, setLikeCount] = useState(post.likes ? post.likes : 0);
+  const [likeCount, setLikeCount] = useState(post.likes);
   const [likes, setLikes] = useState(
     likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes",
   );
@@ -51,6 +51,10 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
       setLikedByUser(!likedByUser);
     },
   });
+
+  useEffect(() => {
+    setLikes(likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes");
+  }, [likeCount]);
 
   const handleToggleLikeCount = () => {
     if (!user) {
@@ -71,9 +75,26 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
     toggleLike.mutate({ postId: post.id });
   };
 
-  useEffect(() => {
-    setLikes(likeCount === 0 ? "" : likeCount === 1 ? "like" : "likes");
-  }, [likeCount]);
+  const repliesWord =
+    post.replies === 0 ? "" : post.replies === 1 ? "reply" : "replies";
+
+  const handleReply = () => {
+    if (!user) {
+      toast("Not logged in?", {
+        description: "You must be logged in to like a post.",
+        action: {
+          label: "Sign In",
+          onClick: () => router.push("/api/auth/signin"),
+        },
+      });
+
+      return;
+    }
+
+    toggleCommentFormIsOpen(post);
+
+    toggleLike.mutate({ postId: post.id });
+  };
 
   const userSlug = post.author.slug ? "@" + post.author.slug : post.authorId;
 
@@ -162,9 +183,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
                     title="like"
                     type="button"
                     className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-                    onClick={() => {
-                      handleToggleLikeCount();
-                    }}
+                    onClick={handleToggleLikeCount}
                   >
                     {likedByUser ? (
                       <PiHeartFill className="transform text-2xl text-red-500 transition-transform active:scale-90" />
@@ -177,23 +196,23 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
                     title="comment"
                     type="button"
                     className="rounded-full p-[0.4rem] transition-colors duration-200 hover:bg-zinc-900"
-                    onClick={() => toggleCommentFormIsOpen(post)}
+                    onClick={handleReply}
                   >
                     <PiChatCircle className="text-2xl" />
                   </button>
                 </div>
 
                 <div className="space-x-3">
-                  {!pathname.includes(post.id) && (
+                  {!pathname.includes(post.id) && post.replies ? (
                     <Link
                       className="text-zinc-500"
                       href={`/user/${post.author.slug ?? post.authorId}/post/${
                         post.id
                       }`}
                     >
-                      replies
+                      {post.replies + " " + repliesWord}
                     </Link>
-                  )}
+                  ) : null}
                   <span
                     className="cursor-pointer text-zinc-500"
                     onClick={() => setLikesModalIsOpen(!likesModalIsOpen)}

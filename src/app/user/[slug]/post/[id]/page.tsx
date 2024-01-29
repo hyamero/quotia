@@ -42,10 +42,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     <>
       <CreateComment />
       <PostItem post={post as Post} />
-      <div className="my-3 rounded-3xl border-l-2 pl-4">
-        <TempComments />
-        <Posts postId={post?.id} />
-      </div>
+      {post && (
+        <div className="y-3 rounded-3xl pl-4">
+          <TempComments />
+          <Posts postId={post?.id} />
+        </div>
+      )}
     </>
   );
 }
