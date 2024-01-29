@@ -27,7 +27,13 @@ export const createTempPostSlice: StateCreator<TempPostSlice> = (set) => ({
       newPost &&
       set((state) => ({
         tempPosts: [
-          { ...newPost, likes: 0, likedByUser: false, updatedAt: null },
+          {
+            ...newPost,
+            likes: 0,
+            likedByUser: false,
+            updatedAt: null,
+            replies: 0,
+          },
           ...state.tempPosts,
         ],
       })),

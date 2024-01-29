@@ -7,12 +7,12 @@ export type PostItem = {
   likes: number;
   likedByUser: boolean;
   parentId: string | null;
-  replies?: number;
+  replies: number;
 };
 
 export type TempPostItem = Omit<
   PostItem,
-  "likes" | "likedByUser" | "updatedAt"
+  "likes" | "likedByUser" | "updatedAt" | "replies"
 >;
 
 export type User = {

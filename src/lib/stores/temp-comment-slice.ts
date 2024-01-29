@@ -29,7 +29,13 @@ export const createTempCommentSlice: StateCreator<TempCommentSlice> = (
       newComment &&
       set((state) => ({
         tempComments: [
-          { ...newComment, likes: 0, likedByUser: false, updatedAt: null },
+          {
+            ...newComment,
+            likes: 0,
+            likedByUser: false,
+            updatedAt: null,
+            replies: 0,
+          },
           ...state.tempComments,
         ],
       })),
