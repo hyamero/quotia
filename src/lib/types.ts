@@ -7,6 +7,7 @@ export type PostItem = {
   likes: number;
   likedByUser: boolean;
   parentId: string | null;
+  replies?: number;
 };
 
 export type TempPostItem = Omit<

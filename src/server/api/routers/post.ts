@@ -51,6 +51,7 @@ export const postRouter = createTRPCRouter({
         with: {
           author: true,
           likes: true,
+          replies: true,
         },
       });
 
@@ -71,7 +72,8 @@ export const postRouter = createTRPCRouter({
         posts: data.map((post) => {
           return {
             ...post,
-            likes: post.likes.length,
+            replies: post.replies.length ?? 0,
+            likes: post.likes.length ?? 0,
             likedByUser: post.likes.some(
               (like) => like.userId === ctx.session?.user.id,
             ),
@@ -93,13 +95,15 @@ export const postRouter = createTRPCRouter({
         with: {
           author: true,
           likes: true,
+          replies: true,
         },
       });
 
       return (
         data && {
           ...data,
-          likes: data.likes.length,
+          replies: data.replies.length ?? 0,
+          likes: data.likes.length ?? 0,
           likedByUser: data.likes.some(
             (like) => like.userId === ctx.session?.user.id,
           ),
