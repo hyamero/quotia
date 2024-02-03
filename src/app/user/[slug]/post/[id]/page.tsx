@@ -43,7 +43,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       <CreateComment />
       <PostItem post={post as Post} />
       {post && (
-        <div className="y-3 rounded-3xl pl-4">
+        <div className="y-3 rounded-3xl pl-6">
           <TempComments />
           <Posts postId={post?.id} />
         </div>
