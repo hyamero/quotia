@@ -9,15 +9,12 @@ import {
   createTempCommentSlice,
 } from "./stores/temp-comment-slice";
 
-import { type SessionSlice, createSessionSlice } from "./stores/session-slice";
-
 import { type ModalSlice, createModalSlice } from "./stores/modal-slice";
 
 export const useBoundStore = create<
-  TempPostSlice & SessionSlice & ModalSlice & TempCommentSlice
+  TempPostSlice & ModalSlice & TempCommentSlice
 >((...a) => ({
   ...createTempPostSlice(...a),
-  ...createSessionSlice(...a),
   ...createModalSlice(...a),
   ...createTempCommentSlice(...a),
 }));
