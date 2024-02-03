@@ -5,9 +5,10 @@ import { cookies } from "next/headers";
 import { GeistSans } from "geist/font/sans";
 import { TRPCReactProvider } from "~/trpc/react";
 import { getServerAuthSession } from "~/server/auth";
+import AuthProvider from "./context/client-auth-provider";
 
-import { Toaster } from "~/app/_components/ui/sonner";
 import { LoginModal } from "./_components/modal/modals";
+import { Toaster } from "~/app/_components/ui/sonner";
 import { Navbar } from "./_components/navbar";
 import NextTopLoader from "nextjs-toploader";
 import type { User } from "~/lib/types";
@@ -40,11 +41,14 @@ export default async function RootLayout({
         <NextTopLoader />
         <Toaster />
         <TRPCReactProvider cookies={cookies().toString()}>
-          <Navbar session={session} slug={user?.slug} />
-          <LoginModal />
-          <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">
-            {children}
-          </div>
+          <AuthProvider session={session}>
+            <Navbar session={session} slug={user?.slug} />
+            <LoginModal />
+
+            <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">
+              {children}
+            </div>
+          </AuthProvider>
         </TRPCReactProvider>
       </body>
     </html>
