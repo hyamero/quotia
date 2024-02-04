@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type User } from "~/lib/types";
+import { type Session } from "next-auth";
 
 import {
   PiHouseFill,
@@ -22,20 +22,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/app/_components/ui/sheet";
+
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import type { Session } from "next-auth";
-import { useEffect } from "react";
 import { useBoundStore } from "~/lib/use-bound-store";
+import { useSession } from "next-auth/react";
 
-export function Navbar({
-  session,
-  slug,
-}: {
-  session?: Session | null;
-  slug: string | null | undefined;
-}) {
-  const setSession = useBoundStore((state) => state.setSession);
+export function Navbar() {
+  const { data: session, status } = useSession();
 
   const router = useRouter();
 
@@ -47,15 +41,9 @@ export function Navbar({
     (state) => state.modalActions.toggleLoginModalIsOpen,
   );
 
-  useEffect(() => {
-    if (session) {
-      setSession({ ...session.user, slug: slug ?? null } as User);
-    } else setSession(null);
-  }, [session, slug]);
-
-  const user = useBoundStore((state) => state.user);
-
-  const slugParam = user?.slug ? "@" + user.slug : user?.id;
+  const slugParam = session?.user?.slug
+    ? "@" + session?.user.slug
+    : session?.user?.id;
 
   return (
     <nav>
@@ -69,7 +57,7 @@ export function Navbar({
             <RiDoubleQuotesL />
           </Link>
 
-          <BurgerMenu user={user} />
+          <BurgerMenu user={session?.user} />
         </div>
       </div>
 
@@ -85,7 +73,7 @@ export function Navbar({
         <button
           title="create a post"
           onClick={() => {
-            if (user) {
+            if (status === "authenticated") {
               togglePostFormIsOpen();
             } else {
               toggleLoginModalIsOpen();
@@ -117,7 +105,7 @@ export function Navbar({
   );
 }
 
-const BurgerMenu = ({ user }: { user: User | null }) => {
+const BurgerMenu = ({ user }: { user: Session["user"] | null | undefined }) => {
   return (
     <Sheet>
       <SheetTrigger
