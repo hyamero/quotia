@@ -24,6 +24,7 @@ import {
 import { useBoundStore } from "~/lib/use-bound-store";
 import { ProfileHoverCard } from "../profile/profile-hovercard";
 import { ViewLikes } from "./view-likes";
+import { useSession } from "next-auth/react";
 
 type PostItemProps = {
   post: Post;
@@ -31,7 +32,8 @@ type PostItemProps = {
 };
 
 export function PostItem({ post, postType = "post" }: PostItemProps) {
-  const user = useBoundStore((state) => state.user);
+  const { data: session } = useSession();
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -57,7 +59,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
   }, [likeCount]);
 
   const handleToggleLikeCount = () => {
-    if (!user) {
+    if (!session) {
       toast("Not logged in?", {
         description: "You must be logged in to like a post.",
         action: {
@@ -79,7 +81,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
     post.replies === 0 ? "" : post.replies === 1 ? "reply" : "replies";
 
   const handleReply = () => {
-    if (!user) {
+    if (!session) {
       toast("Not logged in?", {
         description: "You must be logged in to like a post.",
         action: {
@@ -125,7 +127,7 @@ export function PostItem({ post, postType = "post" }: PostItemProps) {
 
           <div className="w-full">
             <div className="flex justify-between">
-              <ProfileHoverCard author={post.author} userId={user?.id}>
+              <ProfileHoverCard author={post.author} userId={session?.user.id}>
                 <Link
                   href={`/user/${userSlug}`}
                   className="font-semibold hover:underline"

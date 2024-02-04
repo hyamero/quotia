@@ -14,26 +14,27 @@ import {
   AvatarImage,
   AvatarFallback,
 } from "~/app/_components/ui/avatar";
+import { useSession } from "next-auth/react";
 
 export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
-  const user = useBoundStore((state) => state.user);
+  const { data: session } = useSession();
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const setPostFormIsOpen = useBoundStore(
     (state) => state.modalActions.setPostFormIsOpen,
   );
   const postFormIsOpen = useBoundStore((state) => state.postFormIsOpen);
 
-  if (!user) {
+  if (!session) {
     return !onProfilePage && <CreatePostTrigger />;
   }
 
   if (isDesktop) {
     return (
       <Dialog open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
-        {!onProfilePage && <CreatePostTrigger user={user} />}
+        {!onProfilePage && <CreatePostTrigger user={session.user} />}
         <DialogContent>
           {/* Form Component */}
-          <PostForm user={user} formType="post" />
+          <PostForm user={session.user} formType="post" />
         </DialogContent>
       </Dialog>
     );
@@ -41,10 +42,10 @@ export function CreatePost({ onProfilePage }: { onProfilePage?: boolean }) {
 
   return (
     <Drawer open={postFormIsOpen} onOpenChange={setPostFormIsOpen}>
-      {!onProfilePage && <CreatePostTrigger user={user} />}
+      {!onProfilePage && <CreatePostTrigger user={session.user} />}
       <DrawerContent className="px-7 pb-20">
         {/* Form Component */}
-        <PostForm user={user} formType="post" />
+        <PostForm user={session.user} formType="post" />
       </DrawerContent>
     </Drawer>
   );

@@ -7,9 +7,11 @@ import { useBoundStore } from "~/lib/use-bound-store";
 import { Drawer, DrawerContent } from "../ui/drawer";
 import { Dialog, DialogContent } from "~/app/_components/ui/dialog";
 import { PostItem } from "../post/post-item";
+import { useSession } from "next-auth/react";
 
 export function CreateComment() {
-  const user = useBoundStore((state) => state.user);
+  const { data: session } = useSession();
+
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const setCommentFormIsOpen = useBoundStore(
     (state) => state.modalActions.setCommentFormIsOpen,
@@ -17,7 +19,7 @@ export function CreateComment() {
 
   const commentFormIsOpen = useBoundStore((state) => state.commentFormIsOpen);
 
-  if (!user || !commentFormIsOpen.post || !commentFormIsOpen.isOpen) {
+  if (!session || !commentFormIsOpen.post || !commentFormIsOpen.isOpen) {
     return null;
   }
 
@@ -38,7 +40,7 @@ export function CreateComment() {
           <PostItem postType="comment" post={commentFormIsOpen.post} />
 
           {/* Form Component */}
-          <PostForm formType="comment" user={user} post={_post} />
+          <PostForm formType="comment" user={session.user} post={_post} />
         </DialogContent>
       </Dialog>
     );
@@ -50,7 +52,7 @@ export function CreateComment() {
         <PostItem postType="comment" post={commentFormIsOpen.post} />
 
         {/* Form Component */}
-        <PostForm formType="comment" user={user} post={_post} />
+        <PostForm formType="comment" user={session.user} post={_post} />
       </DrawerContent>
     </Drawer>
   );

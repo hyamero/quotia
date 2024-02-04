@@ -11,6 +11,8 @@ import { useInView } from "react-intersection-observer";
 import Loading, { LoadingSkeleton } from "~/app/feed-loading";
 import { useBoundStore } from "~/lib/use-bound-store";
 import { CreateComment } from "../comment/create-comment";
+import { useSession } from "next-auth/react";
+import { type Post } from "~/lib/types";
 
 type PostsProps = {
   authorId?: string;
@@ -18,7 +20,7 @@ type PostsProps = {
 };
 
 export function Posts({ authorId, postId }: PostsProps) {
-  const user = useBoundStore((state) => state.user);
+  const { data: session } = useSession();
   const tempPosts = useBoundStore((state) => state.tempPosts);
   const deletedPosts = useBoundStore((state) => state.deletedPosts);
 
@@ -64,20 +66,11 @@ export function Posts({ authorId, postId }: PostsProps) {
       <CreateComment />
       <DeletePostModal />
 
-      {user && tempPosts.length !== 0
+      {session && tempPosts.length !== 0
         ? tempPosts
             .filter((post) => !deletedPosts.includes(post.id))
             .map((post) => {
-              return (
-                <PostItem
-                  key={post.id}
-                  post={{
-                    ...post,
-                    authorId: user.id,
-                    author: user,
-                  }}
-                />
-              );
+              return <PostItem key={post.id} post={post as Post} />;
             })
         : null}
 

@@ -14,7 +14,6 @@ import { Posts } from "../post/posts";
 import { EditUserModal } from "./edit-profile-modal";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { useBoundStore } from "~/lib/use-bound-store";
 
 import {
   Tabs,
@@ -22,6 +21,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "~/app/_components/ui/tabs";
+import { useSession } from "next-auth/react";
 
 export default function UserProfile({ user }: { user?: User }) {
   const [mounted, setMounted] = useState(false);
@@ -34,8 +34,8 @@ export default function UserProfile({ user }: { user?: User }) {
     return <NoUser />;
   }
 
-  const currentUser = useBoundStore((state) => state.user);
-  const isCurrentUser = currentUser?.id === user?.id;
+  const { data: session } = useSession();
+  const isCurrentUser = session?.user?.id === user?.id;
 
   useEffect(() => {
     if (user?.slug) {

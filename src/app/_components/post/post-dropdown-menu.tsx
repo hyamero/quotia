@@ -12,6 +12,7 @@ import {
 } from "~/app/_components/ui/dropdown-menu";
 import { useBoundStore } from "~/lib/use-bound-store";
 import React from "react";
+import { useSession } from "next-auth/react";
 
 type PostDropdownMenuProps = {
   postId: string;
@@ -22,8 +23,8 @@ export function PostDropdownMenu({
   postId,
   postAuthor,
 }: PostDropdownMenuProps) {
-  const user = useBoundStore((state) => state.user);
-  const isAuthor = user?.id === postAuthor;
+  const { data: session } = useSession();
+  const isAuthor = session?.user?.id === postAuthor;
   const setDeletePostId = useBoundStore(
     (state) => state.tempPostActions.setDeletePostId,
   );
