@@ -11,6 +11,8 @@ import { LoginModal } from "./_components/modal/modals";
 import { Toaster } from "~/app/_components/ui/sonner";
 import { Navbar } from "./_components/navbar";
 import NextTopLoader from "nextjs-toploader";
+import { api } from "~/trpc/server";
+import { type User } from "~/lib/types";
 
 export const metadata = {
   title: "Quotia",
@@ -25,14 +27,15 @@ export default async function RootLayout({
 }) {
   const session = await getServerAuthSession();
 
-  // const user =
-  //   session &&
-  //   ((await api.user.getUser.query({
-  //     id: session?.user?.id ?? "",
-  //     columns: {
-  //       slug: true,
-  //     },
-  //   })) as User);
+  const sessionUser =
+    session &&
+    ((await api.user.getUser.query({
+      id: session?.user?.id ?? "",
+      columns: {
+        slug: true,
+        name: true,
+      },
+    })) as User);
 
   return (
     <html lang="en">
@@ -41,7 +44,7 @@ export default async function RootLayout({
         <Toaster />
         <TRPCReactProvider cookies={cookies().toString()}>
           <AuthProvider session={session}>
-            <Navbar />
+            <Navbar sessionUser={sessionUser} />
             <LoginModal />
 
             <div className="mx-auto w-full max-w-lg pt-24 xl:max-w-xl">

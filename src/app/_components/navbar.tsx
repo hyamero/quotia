@@ -27,9 +27,17 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { useBoundStore } from "~/lib/use-bound-store";
 import { useSession } from "next-auth/react";
+import { type User } from "~/lib/types";
+import { useEffect } from "react";
 
-export function Navbar() {
+export function Navbar({ sessionUser }: { sessionUser: User | null }) {
   const { data: session, status } = useSession();
+
+  const setSessionUser = useBoundStore((state) => state.setSessionUser);
+
+  useEffect(() => {
+    setSessionUser(sessionUser);
+  }, [sessionUser]);
 
   const router = useRouter();
 
@@ -41,9 +49,9 @@ export function Navbar() {
     (state) => state.modalActions.toggleLoginModalIsOpen,
   );
 
-  const slugParam = session?.user?.slug
-    ? "@" + session?.user.slug
-    : session?.user?.id;
+  const slugParam = sessionUser?.slug
+    ? "@" + sessionUser?.slug
+    : sessionUser?.id;
 
   return (
     <nav>
@@ -57,7 +65,7 @@ export function Navbar() {
             <RiDoubleQuotesL />
           </Link>
 
-          <BurgerMenu user={session?.user} />
+          <BurgerMenu user={sessionUser} />
         </div>
       </div>
 
