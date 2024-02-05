@@ -16,7 +16,7 @@ export function LoginModal() {
   const router = useRouter();
 
   const signInAction = () => {
-    router.push("/api/auth/signin");
+    router.push("/login");
   };
 
   return (

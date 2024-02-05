@@ -38,7 +38,7 @@ type EditUserModalProps = {
 
 export function EditUserModal({ user }: EditUserModalProps) {
   const router = useRouter();
-  const setSession = useBoundStore((state) => state.setSession);
+  const setSessionUser = useBoundStore((state) => state.setSessionUser);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [name, setName] = useState(user.name ?? "");
@@ -60,7 +60,7 @@ export function EditUserModal({ user }: EditUserModalProps) {
     if (isSuccess) {
       toast.success("Profile Updated!");
       setModalIsOpen(false);
-      setSession({
+      setSessionUser({
         ...user,
         slug: slug ?? null,
         name: name,
