@@ -41,6 +41,7 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  secret: env.NEXTAUTH_SECRET,
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
@@ -62,6 +63,12 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
   ],
+
+  pages: {
+    signIn: "/login",
+    signOut: "/logout",
+    error: "/login",
+  },
 };
 
 /**

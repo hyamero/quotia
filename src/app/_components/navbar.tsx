@@ -131,11 +131,11 @@ const BurgerMenu = ({ user }: { user: Session["user"] | null | undefined }) => {
         </SheetHeader>
         <Link
           aria-label="Sign in or Sign out"
-          href={user ? "/api/auth/signout" : "/api/auth/signin"}
+          href={user ? "/signout" : "/signin"}
         >
-          <Button className="mt-5 w-full">
-            {user ? "Sign out" : "Sign in"}
-          </Button>
+          <SheetTrigger className="mt-5 w-full">
+            <Button className="w-full">{user ? "Sign out" : "Sign in"}</Button>
+          </SheetTrigger>
         </Link>
       </SheetContent>
     </Sheet>
