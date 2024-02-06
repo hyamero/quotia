@@ -12,7 +12,7 @@ import {
   CardDescription,
 } from "~/app/_components/ui/card";
 
-export default function Login() {
+export default function Page() {
   const { status } = useSession();
   const router = useRouter();
 
@@ -21,13 +21,15 @@ export default function Login() {
   }
 
   return (
-    <section className="container max-w-lg">
+    <section className="container mt-20 max-w-lg">
       <Card className="space-y-5">
         <CardHeader className="space-y-1">
           <CardTitle className="flex items-center justify-between text-2xl">
             <p>Login to proceed</p>
           </CardTitle>
-          <CardDescription>an open space for universities</CardDescription>
+          <CardDescription>
+            Social Media application, built with modern technologies.
+          </CardDescription>
         </CardHeader>
 
         <CardFooter className="flex flex-col items-start">

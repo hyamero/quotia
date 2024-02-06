@@ -16,7 +16,7 @@ export function LoginModal() {
   const router = useRouter();
 
   const signInAction = () => {
-    router.push("/login");
+    router.push("/signin");
   };
 
   return (
