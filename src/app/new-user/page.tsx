@@ -1,0 +1,163 @@
+"use client";
+
+import * as z from "zod";
+import { toast } from "sonner";
+import { api } from "~/trpc/react";
+import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useBoundStore } from "~/lib/use-bound-store";
+
+import { type User } from "~/lib/types";
+import { Input } from "~/app/_components/ui/input";
+import { Button } from "~/app/_components/ui/button";
+
+import {
+  Form,
+  FormItem,
+  FormLabel,
+  FormField,
+  FormMessage,
+  FormControl,
+  FormDescription,
+} from "~/app/_components/ui/form";
+import { useSession } from "next-auth/react";
+
+export default function Page() {
+  const router = useRouter();
+  const setSessionUser = useBoundStore((state) => state.setSessionUser);
+  const sessionUser = useBoundStore((state) => state.user);
+
+  const { data: session } = useSession();
+
+  const [name, setName] = useState(session?.user.name ?? "");
+  const [slug, setSlug] = useState(sessionUser?.slug ?? "");
+
+  const {
+    mutate: editUser,
+    isSuccess,
+    isLoading,
+    isError,
+  } = api.user.editUser.useMutation();
+
+  useEffect(() => {
+    if (isLoading) {
+      toast.loading("Updating profile...");
+      router.prefetch(`/user/${slug ?? session?.user.id}`);
+    }
+
+    if (isSuccess) {
+      toast.success("Profile Updated!");
+      setSessionUser({
+        ...session?.user,
+        slug: slug ?? null,
+        name: name,
+      } as User);
+      router.replace(`/user/${slug ?? session?.user.id}`);
+    }
+
+    if (isError) {
+      toast.error("Something went wrong. Try again later.");
+    }
+  }, [isLoading, isSuccess, isError]);
+
+  const charWarning = (value: "max" | "min") => {
+    if (value === "max") {
+      return "The username must be 30 characters or less";
+    } else {
+      return "The username must be 3 characters or more";
+    }
+  };
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(3, { message: charWarning("min") })
+      .max(30, { message: charWarning("max") })
+      .regex(/^[a-z A-Z]+$/, "The name must contain only letters"),
+
+    slug: z
+      .string()
+      .min(3, { message: charWarning("min") })
+      .max(30, { message: charWarning("max") })
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "The username must contain only letters, numbers, period, and underscore (_)",
+      ),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: session?.user.name ?? "",
+      slug: sessionUser?.slug ?? "",
+    },
+  });
+
+  const slugAvailable = api.user.slugAvaliable.useQuery(form.watch("slug"), {
+    enabled: !!form.watch("slug"),
+  });
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (!slugAvailable.data) {
+      toast.error("Username already taken.");
+      return;
+    }
+
+    if (data.name !== session?.user.name || data.slug !== sessionUser?.slug) {
+      editUser({
+        name: data.name,
+        slug: data.slug,
+      });
+
+      setName(data.name);
+      setSlug(data.slug);
+    } else {
+      toast.info("No changes made.");
+    }
+  };
+
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-20 space-y-8 rounded-lg border p-12"
+      >
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Display name" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="slug"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button title="submit" type="submit" className="w-full">
+          {isLoading ? "Saving..." : "Save"}
+        </Button>
+      </form>
+    </Form>
+  );
+}

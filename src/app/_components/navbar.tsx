@@ -53,6 +53,10 @@ export function Navbar({ sessionUser }: { sessionUser: User | null }) {
     ? "@" + sessionUser?.slug
     : sessionUser?.id;
 
+  if (status === "authenticated" && !sessionUser?.slug) {
+    router.push("/new-user");
+  }
+
   return (
     <nav>
       <div className="fixed left-0 right-0 top-0 z-50 w-full  bg-zinc-950 bg-opacity-40 bg-clip-padding py-6 backdrop-blur-xl backdrop-filter md:z-40">
