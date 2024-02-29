@@ -104,41 +104,66 @@ export default function UserProfile({ user }: { user?: User }) {
           )}
         </section>
 
-        <Tabs defaultValue="posts" className="mt-5 w-full">
-          <TabsList className="w-full border-b bg-transparent">
-            <TabsTrigger value="posts" className="w-full">
-              Posts
-            </TabsTrigger>
-            <TabsTrigger value="replies" className="w-full">
-              Replies
-            </TabsTrigger>
-            <TabsTrigger value="likes" className="w-full">
-              Likes
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="posts">
-            {/* User Feed with authorId param
-       to list user's posts */}
-            <Posts authorId={user.id} />
-          </TabsContent>
-
-          <TabsContent value="replies">
-            <div className="flex justify-center pt-10 text-xl font-semibold">
-              Replies tab coming soon..
-            </div>
-          </TabsContent>
-
-          <TabsContent value="likes">
-            <div className="flex justify-center pt-10 text-xl font-semibold">
-              Likes tab coming soon..
-            </div>
-          </TabsContent>
-        </Tabs>
+        <TabsContents userId={user.id} />
       </main>
     )
   );
 }
+
+const TabsContents = ({ userId }: { userId: string }) => {
+  const contents = [
+    {
+      value: "posts",
+      component: () => <Posts authorId={userId} />,
+    },
+    {
+      value: "replies",
+      component: () => (
+        <div className="flex justify-center pt-10 text-xl font-semibold">
+          Coming soon!
+        </div>
+      ),
+    },
+    {
+      value: "likes",
+      component: () => (
+        <div className="flex justify-center pt-10 text-xl font-semibold">
+          Coming soon!
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <Tabs defaultValue="posts" className="mt-5 w-full">
+      <TabsList className="w-full border-b bg-transparent">
+        {contents.map((tab) => (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className="w-full capitalize"
+          >
+            {tab.value}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+
+      {contents.map((content) => {
+        const Component = content.component;
+
+        return (
+          <TabsContent
+            key={content.value}
+            value={content.value}
+            className="pt-5"
+          >
+            <Component />
+          </TabsContent>
+        );
+      })}
+    </Tabs>
+  );
+};
 
 const NoUser = () => {
   return (
