@@ -13,6 +13,7 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 import { Button } from "../ui/button";
+import { format } from "date-fns";
 
 type ProfileHoverCardProps = {
   children: React.ReactNode;
@@ -44,7 +45,7 @@ export function ProfileHoverCard({
             <div className="flex items-center">
               <CalendarDays className="mr-2 h-4 w-4 opacity-70" />{" "}
               <span className="text-xs text-muted-foreground">
-                Joined December 2021
+                Joined {format(new Date(author.createdAt), "MMMM yyyy")}
               </span>
             </div>
           </div>
