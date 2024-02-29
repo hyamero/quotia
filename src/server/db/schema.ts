@@ -62,7 +62,9 @@ export const likes = mysqlTable(
   },
   (like) => {
     return {
-      compoundKey: primaryKey(like.userId, like.postId),
+      compoundKey: primaryKey({
+        columns: [like.userId, like.postId],
+      }),
       userIdIdx: index("userId_idx").on(like.userId),
       postIdIdx: index("postId_idx").on(like.postId),
     };
