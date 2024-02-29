@@ -111,7 +111,7 @@ export function EditUserModal({ user }: EditUserModalProps) {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    if (!slugAvailable.data) {
+    if (!slugAvailable.data && data.slug !== user.slug) {
       toast.error("Username already taken.");
       return;
     }
